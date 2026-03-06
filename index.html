@@ -2,776 +2,484 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ECOS DE RAÍZ - Alquimia Sensorial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>ECOS DE RAÍZ - Alquimia Sensorial Pro</title>
     
-    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- Three.js and Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
-    
+
     <style>
-        /* Custom styles for organic feel */
+        :root {
+            --primary-purple: #8A2BE2;
+            --accent-cyan: #00FFFF;
+            --deep-bg: #0f051a;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b3a 100%);
-            min-height: 100vh;
+            background-color: var(--deep-bg);
+            background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #0a0411 100%);
             color: #e0d0ff;
+            margin: 0;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
-        
-        h1, h2, h3, .serif-text {
-            font-family: 'Playfair Display', serif;
+
+        .serif-text { font-family: 'Playfair Display', serif; }
+
+        /* --- AMARI FLOTANTE (MINI VENTANA SIEMPRE VISIBLE) --- */
+        #amari-assistant {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 140px;
+            z-index: 9999;
+            pointer-events: auto;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
-        /* Glowing effects */
-        .glow-text {
-            text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+
+        .amari-window {
+            background: rgba(20, 10, 30, 0.85);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--primary-purple);
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(138, 43, 226, 0.3);
+            text-align: center;
         }
-        
-        .glow-box {
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+
+        #amari-mini-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 8px;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
         }
-        
-        /* Brain region hover effects */
+
+        .amari-bubble {
+            font-size: 11px;
+            line-height: 1.2;
+            color: white;
+            background: rgba(138, 43, 226, 0.2);
+            padding: 5px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        /* --- ESTILOS DE MÓDULOS --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
         .brain-region {
-            transition: all 0.3s ease;
             cursor: pointer;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+            transition: all 0.4s ease;
         }
         
         .brain-region:hover {
-            filter: drop-shadow(0 0 15px currentColor);
-            transform: scale(1.02);
+            filter: drop-shadow(0 0 10px currentColor);
+            stroke-width: 5px;
         }
-        
-        /* Speech bubble styles */
-        .speech-bubble {
-            position: relative;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            border-radius: 20px;
-            padding: 15px 25px;
-            color: white;
-            font-family: 'Playfair Display', serif;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+        /* --- BOTONES Y CONTROLES TOUCH --- */
+        .element-btn {
+            touch-action: manipulation;
+            transition: all 0.2s;
+            cursor: pointer;
         }
-        
-        .speech-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -15px;
-            left: 30px;
-            border-width: 15px 15px 0;
-            border-style: solid;
-            border-color: rgba(138, 43, 226, 0.3) transparent transparent;
+
+        .element-btn:active { transform: scale(0.9); }
+
+        .active-element {
+            background: rgba(138, 43, 226, 0.5) !important;
+            border: 1px solid var(--accent-cyan) !important;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
         }
-        
-        /* Glassmorphism */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(138, 43, 226, 0.2);
-            border-radius: 20px;
+
+        #particles-background {
+            position: fixed;
+            top: 0; left: 0; z-index: -1;
         }
-        
-        /* Animated circle for BPM */
-        .bpm-circle {
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, #8A2BE2 0%, #4B0082 100%);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-            box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+
+        .bpm-pulse {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.8; }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(.8); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(.8); opacity: 0.8; }
         }
-        
-        /* Canvas container */
-        #canvas-container {
-            width: 100%;
-            height: 400px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: rgba(0,0,0,0.3);
-        }
-        
-        /* Navigation dots */
-        .nav-dot {
-            width: 12px;
-            height: 12px;
-            background: rgba(138, 43, 226, 0.3);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-dot.active {
-            background: #8A2BE2;
-            box-shadow: 0 0 15px #8A2BE2;
-            transform: scale(1.2);
-        }
-        
-        /* Fullscreen mode */
-        .fullscreen-mode {
-            background: linear-gradient(135deg, #4B0082 0%, #9400D3 100%) !important;
-        }
-        
-        .fullscreen-mode .hide-in-fullscreen {
-            display: none !important;
-        }
+
+        /* Ocultar barra de scroll pero mantener funcionalidad */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
     </style>
 </head>
-<body class="relative">
-    <!-- Floating particles background (p5.js will handle this) -->
+<body>
+
     <div id="particles-background"></div>
-    
-    <!-- Main Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass-card m-4 p-4 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-            <span class="serif-text text-xl glow-text">ECOS DE RAÍZ</span>
+
+    <div id="amari-assistant">
+        <div class="amari-window">
+            <img src="imagen/Recepcion.png" id="amari-mini-img" alt="Amari">
+            <div class="amari-bubble" id="amari-mini-speech">
+                ✨ Estoy aquí contigo ✨
+            </div>
+            <div class="flex justify-around mt-2">
+                <button onclick="changeAmari('Casual.png', '¿Cómo fluyes?')" class="text-[10px] text-cyan-400"><i class="fas fa-magic"></i></button>
+                <button onclick="changeAmari('Pensando.png', 'Analizando...')" class="text-[10px] text-purple-400"><i class="fas fa-brain"></i></button>
+                <button onclick="scrollToTop()" class="text-[10px] text-white"><i class="fas fa-arrow-up"></i></button>
+            </div>
         </div>
-        
-        <div class="flex space-x-4">
-            <div class="nav-dot active"></div>
-            <div class="nav-dot"></div>
-            <div class="nav-dot"></div>
-            <div class="nav-dot"></div>
-            <div class="nav-dot"></div>
+    </div>
+
+    <nav class="fixed top-0 left-0 right-0 z-[5000] p-4">
+        <div class="glass-card flex justify-between items-center p-4 m-0">
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
+                <h1 class="serif-text text-lg font-bold glow-text tracking-tighter">ECOS DE RAÍZ</h1>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="toggleFS()" class="text-white opacity-70"><i class="fas fa-expand"></i></button>
+            </div>
         </div>
-        
-        <button id="fullscreen-btn" class="px-4 py-2 glass-card hover:bg-purple-500/20 transition">
-            <i class="fas fa-expand"></i>
-        </button>
     </nav>
-    
-    <!-- Main Content with Brain Navigation -->
-    <main class="container mx-auto px-4 pt-24 pb-12">
-        <!-- Welcome Section with Amari -->
-        <div class="flex flex-col md:flex-row items-center justify-between mb-12">
-            <div class="md:w-1/2 relative">
-                <!-- Amari's image with speech bubble -->
-                <div class="relative inline-block">
-                    <img src="imagen/Recepcion.png" alt="Amari" class="rounded-2xl max-w-xs glow-box" id="amari-image">
-                    <div class="speech-bubble absolute -top-20 left-1/2 transform -translate-x-1/2 w-64 text-center" id="amari-speech">
-                        <p class="text-lg">✨ Hola, soy Amari ✨</p>
-                        <p class="text-sm opacity-80">Tu guía en este viaje sensorial</p>
-                    </div>
-                </div>
-                
-                <!-- Navigation buttons for different Amari expressions -->
-                <div class="flex mt-4 space-x-2 justify-center">
-                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Recepcion.png', '✨ Hola, soy Amari ✨')">
-                        <i class="fas fa-hand-peace"></i>
-                    </button>
-                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Caminando1.png', 'Vamos a movernos juntas 🌸')">
-                        <i class="fas fa-walking"></i>
-                    </button>
-                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Casual.png', '¿Cómo te sientes hoy? 💜')">
-                        <i class="fas fa-smile"></i>
-                    </button>
-                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Pensando.png', 'Explora tu interior... 🧠')">
-                        <i class="fas fa-brain"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Brain SVG Navigation -->
-            <div class="md:w-1/2 relative mt-8 md:mt-0">
-                <svg viewBox="0 0 400 300" class="w-full h-auto">
-                    <!-- Brain silhouette background -->
+
+    <main class="container mx-auto px-4 pt-24 pb-32">
+        
+        <section class="glass-card p-6 mb-12">
+            <h2 class="serif-text text-2xl text-center mb-6">Tu Mapa Sensorial</h2>
+            <div class="relative max-w-md mx-auto">
+                <svg viewBox="0 0 400 300" class="w-full h-auto drop-shadow-2xl" id="brain-svg">
                     <path d="M150,80 Q200,40 250,80 Q280,100 260,140 Q280,180 240,200 Q200,230 160,200 Q120,180 140,140 Q120,100 150,80" 
-                          fill="none" stroke="#4B0082" stroke-width="2" stroke-opacity="0.3"/>
+                          fill="rgba(138, 43, 226, 0.1)" stroke="rgba(138, 43, 226, 0.3)" stroke-width="2"/>
                     
-                    <!-- Cuerpo Calloso (Violeta) -->
-                    <path id="corpus-callosum" 
-                          d="M180,120 L220,120" 
-                          stroke="#8A2BE2" stroke-width="8" stroke-linecap="round" class="brain-region" style="color: #8A2BE2;"
-                          onclick="activateModule('arteterapia')"/>
-                    
-                    <!-- Corteza Prefrontal (Azul Cian) -->
-                    <circle id="prefrontal" cx="200" cy="90" r="20" 
-                            fill="none" stroke="#00FFFF" stroke-width="3" class="brain-region" style="color: #00FFFF;"
-                            onclick="activateModule('musicoterapia')"/>
-                    
-                    <!-- Hipocampo (Verde Esmeralda) - izquierdo -->
-                    <path id="hippocampus-left" 
-                          d="M150,160 Q170,150 150,140" 
-                          stroke="#50C878" stroke-width="5" fill="none" class="brain-region" style="color: #50C878;"
-                          onclick="activateModule('memoria')"/>
-                    
-                    <!-- Hipocampo (Verde Esmeralda) - derecho -->
-                    <path id="hippocampus-right" 
-                          d="M250,160 Q230,150 250,140" 
-                          stroke="#50C878" stroke-width="5" fill="none" class="brain-region" style="color: #50C878;"
-                          onclick="activateModule('memoria')"/>
-                    
-                    <!-- Amígdala (Rojo Coral) -->
-                    <circle id="amygdala" cx="180" cy="170" r="8" 
-                            fill="none" stroke="#FF7F50" stroke-width="3" class="brain-region" style="color: #FF7F50;"
-                            onclick="activateModule('danzaterapia')"/>
-                    
-                    <!-- Área del Lenguaje (Amarillo Oro) -->
-                    <path id="language-area" 
-                          d="M220,110 L240,130 L220,130 Z" 
-                          stroke="#FFD700" stroke-width="3" fill="none" class="brain-region" style="color: #FFD700;"
-                          onclick="activateModule('expresion')"/>
-                    
-                    <!-- Labels -->
-                    <text x="260" y="80" fill="#00FFFF" font-size="10" class="serif-text">Claridad</text>
-                    <text x="220" y="40" fill="#8A2BE2" font-size="10" class="serif-text">Integración</text>
-                    <text x="120" y="130" fill="#50C878" font-size="10" class="serif-text">Memoria</text>
-                    <text x="280" y="180" fill="#FF7F50" font-size="10" class="serif-text">Liberación</text>
-                    <text x="260" y="140" fill="#FFD700" font-size="10" class="serif-text">Expresión</text>
+                    <path id="reg-art" class="brain-region" d="M180,120 L220,120" stroke="#8A2BE2" stroke-width="12" stroke-linecap="round" onclick="navTo('art-module')"/>
+                    <circle id="reg-music" class="brain-region" cx="200" cy="90" r="25" fill="none" stroke="#00FFFF" stroke-width="4" onclick="navTo('music-module')"/>
+                    <path id="reg-dance" class="brain-region" d="M180,170 Q200,190 220,170" stroke="#FF7F50" stroke-width="6" fill="none" onclick="navTo('dance-module')"/>
+                    <circle id="reg-mem" class="brain-region" cx="150" cy="150" r="10" fill="#50C878" onclick="navTo('closure-module')"/>
+                    <path id="reg-lang" class="brain-region" d="M250,130 L270,150" stroke="#FFD700" stroke-width="8" stroke-linecap="round" onclick="navTo('art-module')"/>
+
+                    <text x="180" y="80" fill="#00FFFF" class="text-[12px] serif-text">VISIÓN</text>
+                    <text x="230" y="190" fill="#FF7F50" class="text-[12px] serif-text">RITMO</text>
                 </svg>
-                
-                <p class="text-center text-sm opacity-60 mt-2">Toca cualquier área del cerebro para comenzar</p>
             </div>
-        </div>
-        
-        <!-- Módulo de Musicoterapia: "Sintonizador Emocional" -->
-        <section id="music-module" class="glass-card p-6 mb-8">
-            <h2 class="serif-text text-2xl mb-4 flex items-center">
-                <i class="fas fa-headphones-alt text-purple-400 mr-2"></i>
-                Sintonizador Emocional
+            <p class="text-center text-xs opacity-50 mt-4">Toca un área para viajar por tu interior</p>
+        </section>
+
+        <section id="music-module" class="glass-card p-6">
+            <h2 class="serif-text text-3xl mb-6 flex items-center">
+                <i class="fas fa-adjust mr-3 text-cyan-400"></i> Alquimia Sonora
             </h2>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <button class="element-btn p-5 glass-card flex flex-col items-center" data-freq="174" data-color="#4B0082">
+                    <i class="fas fa-mountain mb-2 text-amber-800"></i><span class="text-xs">174Hz - Base</span>
+                </button>
+                <button class="element-btn p-5 glass-card flex flex-col items-center" data-freq="417" data-color="#00FFFF">
+                    <i class="fas fa-water mb-2 text-blue-400"></i><span class="text-xs">417Hz - Cambio</span>
+                </button>
+                <button class="element-btn p-5 glass-card flex flex-col items-center" data-freq="528" data-color="#8A2BE2">
+                    <i class="fas fa-heart mb-2 text-pink-500"></i><span class="text-xs">528Hz - ADN</span>
+                </button>
+                <button class="element-btn p-5 glass-card flex flex-col items-center" data-freq="852" data-color="#FFD700">
+                    <i class="fas fa-eye mb-2 text-yellow-400"></i><span class="text-xs">852Hz - Luz</span>
+                </button>
+            </div>
+            <div class="p-4 bg-black/40 rounded-3xl border border-white/5">
+                <canvas id="freq-canvas" class="w-full h-32"></canvas>
+            </div>
+        </section>
+
+        <section id="art-module" class="glass-card p-6 mt-12">
+            <h2 class="serif-text text-3xl mb-6 flex items-center">
+                <i class="fas fa-paint-brush mr-3 text-purple-400"></i>Lienzo Vital
+            </h2>
+            <div class="mb-6">
+                <button id="btn-upload" class="w-full p-4 glass-card border-dashed border-2 border-purple-500/50 flex justify-center items-center gap-3">
+                    <i class="fas fa-cloud-upload-alt text-xl"></i> PROYECTAR IMAGEN
+                </button>
+                <input type="file" id="inp-img" class="hidden" accept="image/*">
+            </div>
+
+            <div id="p5-canvas-container" class="w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black/30 border border-white/10"></div>
+
+            <div class="grid grid-cols-4 gap-2 mt-4">
+                <button class="brush-btn p-3 glass-card" data-type="circle"><i class="fas fa-circle"></i></button>
+                <button class="brush-btn p-3 glass-card" data-type="flower"><i class="fas fa-spa"></i></button>
+                <button class="brush-btn p-3 glass-card" data-type="star"><i class="fas fa-bolt"></i></button>
+                <button onclick="clearCanvas()" class="brush-btn p-3 glass-card text-red-400"><i class="fas fa-trash"></i></button>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Audio Controls -->
+            <div class="mt-6 space-y-4">
                 <div>
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="tierra">
-                            <i class="fas fa-mountain text-2xl text-amber-600"></i>
-                            <span>Tierra</span>
-                        </button>
-                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="agua">
-                            <i class="fas fa-water text-2xl text-blue-400"></i>
-                            <span>Agua</span>
-                        </button>
-                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="aire">
-                            <i class="fas fa-wind text-2xl text-cyan-200"></i>
-                            <span>Aire</span>
-                        </button>
-                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="fuego">
-                            <i class="fas fa-fire text-2xl text-orange-500"></i>
-                            <span>Fuego</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Crossfade slider -->
-                    <div class="mb-4">
-                        <label class="block text-sm mb-2">Transición suave</label>
-                        <input type="range" min="0" max="100" value="50" class="w-full accent-purple-500" id="crossfade">
-                    </div>
-                    
-                    <!-- Vibration patterns -->
-                    <button id="vibration-btn" class="w-full py-3 glass-card hover:bg-purple-500/30 transition mb-2">
-                        <i class="fas fa-mobile-alt mr-2"></i> Sentir el pulso
-                    </button>
+                    <label class="text-[10px] uppercase tracking-widest opacity-60">Energía Vital (Brillo)</label>
+                    <input type="range" id="filter-bright" class="w-full accent-purple-500" min="0" max="200" value="100">
                 </div>
-                
-                <!-- Visualizador de Ondas -->
-                <div>
-                    <canvas id="waveform" width="400" height="200" class="w-full bg-black/20 rounded-lg"></canvas>
-                    <p class="text-center text-sm mt-2 opacity-60">Visualización de frecuencias</p>
-                </div>
+                <button onclick="saveArt()" class="w-full p-4 glass-card bg-white/5 font-bold uppercase text-xs tracking-widest">Descargar Manifiesto Visual</button>
             </div>
         </section>
-        
-        <!-- Módulo de Danzaterapia: "Guía de Movimiento y Ritmo" -->
-        <section id="dance-module" class="glass-card p-6 mb-8">
-            <h2 class="serif-text text-2xl mb-4 flex items-center">
-                <i class="fas fa-heartbeat text-purple-400 mr-2"></i>
-                Guía de Movimiento y Ritmo
-            </h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- BPM Counter -->
-                <div class="flex flex-col items-center justify-center">
-                    <div class="bpm-circle mb-4"></div>
-                    <p class="text-xl">60 BPM - Ritmo cardíaco</p>
-                    <p class="text-sm opacity-60">Respira con el círculo</p>
-                </div>
-                
-                <!-- Motion Detection Info (simulated) -->
-                <div class="text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-child text-6xl text-purple-400"></i>
-                    </div>
-                    <p class="mb-2">Movimiento detectado:</p>
-                    <div class="flex justify-center space-x-2">
-                        <span class="px-3 py-1 glass-card">Brazos ✨</span>
-                        <span class="px-3 py-1 glass-card">Cabeza 🌸</span>
-                    </div>
-                    <p class="text-xs mt-4 opacity-60">Tu movimiento crea arte en tiempo real</p>
+
+        <section id="dance-module" class="glass-card p-10 mt-12 text-center">
+            <h2 class="serif-text text-3xl mb-8">El Ritmo del Corazón</h2>
+            <div class="relative inline-block">
+                <div class="bpm-pulse absolute inset-0 bg-purple-500/20 rounded-full"></div>
+                <div class="w-32 h-32 bg-gradient-to-tr from-purple-600 to-cyan-500 rounded-full flex items-center justify-center shadow-2xl relative z-10">
+                    <i class="fas fa-heartbeat text-5xl text-white"></i>
                 </div>
             </div>
-        </section>
-        
-        <!-- Módulo de Arteterapia Digital: "Lienzo de Transformación" -->
-        <section id="art-module" class="glass-card p-6 mb-8">
-            <h2 class="serif-text text-2xl mb-4 flex items-center">
-                <i class="fas fa-paint-brush text-purple-400 mr-2"></i>
-                Lienzo de Transformación
-            </h2>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Controls -->
-                <div>
-                    <button id="upload-image" class="w-full py-3 glass-card hover:bg-purple-500/30 transition mb-4">
-                        <i class="fas fa-upload mr-2"></i> Subir tu foto
-                    </button>
-                    <input type="file" id="image-input" accept="image/*" class="hidden">
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm mb-2">Brillo</label>
-                        <input type="range" min="0" max="200" value="100" class="w-full accent-purple-500" id="brightness">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm mb-2">Contraste</label>
-                        <input type="range" min="0" max="200" value="100" class="w-full accent-purple-500" id="contrast">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm mb-2">Saturación</label>
-                        <input type="range" min="0" max="200" value="100" class="w-full accent-purple-500" id="saturation">
-                    </div>
-                    
-                    <button id="download-art" class="w-full py-3 glass-card hover:bg-purple-500/30 transition">
-                        <i class="fas fa-download mr-2"></i> Descargar mi obra
-                    </button>
-                </div>
-                
-                <!-- Canvas for Art -->
-                <div class="lg:col-span-2">
-                    <div id="canvas-container"></div>
-                    
-                    <!-- Stickers/Shapes -->
-                    <div class="flex mt-4 space-x-2 overflow-x-auto py-2">
-                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="flower">
-                            <i class="fas fa-seedling text-2xl text-green-400"></i>
-                        </button>
-                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="mandala">
-                            <i class="fas fa-circle text-2xl text-purple-400"></i>
-                        </button>
-                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="sparkle">
-                            <i class="fas fa-star text-2xl text-yellow-400"></i>
-                        </button>
-                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="root">
-                            <i class="fas fa-tree text-2xl text-amber-600"></i>
-                        </button>
-                    </div>
-                </div>
+            <div class="mt-8">
+                <div class="text-4xl font-bold tracking-tighter" id="val-bpm">60</div>
+                <div class="text-[10px] uppercase tracking-widest opacity-50">Latidos por Minuto</div>
+            </div>
+            <div class="mt-6 flex gap-2 justify-center">
+                <button onclick="adjBPM(-5)" class="p-3 glass-card">-</button>
+                <button onclick="adjBPM(5)" class="p-3 glass-card">+</button>
             </div>
         </section>
-        
-        <!-- Módulo de Cierre: "El Oráculo" -->
-        <section id="closure-module" class="glass-card p-6">
-            <h2 class="serif-text text-2xl mb-4 flex items-center">
-                <i class="fas fa-crystal-ball text-purple-400 mr-2"></i>
-                Tu Carta Vital
-            </h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Preview of generated art -->
-                <div class="glass-card p-4">
-                    <div id="final-art-preview" class="w-full h-48 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg mb-4">
-                        <!-- Generated preview will go here -->
-                    </div>
-                    <button id="generate-pdf" class="w-full py-3 glass-card hover:bg-purple-500/30 transition">
-                        <i class="fas fa-file-pdf mr-2"></i> Generar Manifiesto
-                    </button>
-                </div>
-                
-                <!-- Emotional data summary -->
-                <div class="glass-card p-4">
-                    <h3 class="serif-text text-lg mb-3">Resumen de tu viaje</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between">
-                            <span>Colores predominantes:</span>
-                            <span class="flex space-x-1">
-                                <span class="w-4 h-4 bg-purple-600 rounded-full"></span>
-                                <span class="w-4 h-4 bg-blue-400 rounded-full"></span>
-                                <span class="w-4 h-4 bg-pink-400 rounded-full"></span>
-                            </span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Ritmo promedio:</span>
-                            <span>72 BPM</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Intensidad de movimiento:</span>
-                            <span>Fluido 🌊</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 p-3 bg-purple-500/20 rounded-lg">
-                        <p class="text-sm italic">
-                            "Tu energía fluyó como agua que encuentra su cauce, 
-                            transformando cada movimiento en luz violeta..."
-                        </p>
-                    </div>
-                </div>
+
+        <section id="closure-module" class="glass-card p-6 mt-12 mb-20 bg-gradient-to-b from-transparent to-purple-900/20">
+            <h2 class="serif-text text-3xl mb-6 text-center">Tu Carta de Integración</h2>
+            <div class="p-8 border-2 border-cyan-500/30 rounded-3xl text-center italic relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl"><i class="fas fa-quote-right"></i></div>
+                <p id="oracle-text" class="text-lg serif-text leading-relaxed">
+                    "Que tu raíz sea tan profunda como tu deseo de volar. Hoy has transformado tu frecuencia en luz."
+                </p>
             </div>
+            <button onclick="generateOracle()" class="w-full mt-6 p-4 glass-card border-cyan-400/50 hover:bg-cyan-400/10 transition-all">
+                <i class="fas fa-sync-alt mr-2"></i> RECIBIR NUEVO MENSAJE
+            </button>
         </section>
+
     </main>
-    
-    <!-- Floating Action Button for device motion -->
-    <button id="motion-btn" class="fixed bottom-6 right-6 w-16 h-16 rounded-full glass-card hover:bg-purple-500/30 transition flex items-center justify-center">
-        <i class="fas fa-compass text-2xl"></i>
-    </button>
 
-   <script>
-
-/* =========================
-VARIABLES GLOBALES
-========================= */
-
-let currentElement = null
-let audioContext = new (window.AudioContext || window.webkitAudioContext)()
-let oscillators = {}
-let gainNodes = {}
-
-let canvasWave = document.getElementById("waveform")
-let ctxWave = canvasWave.getContext("2d")
-
-let artCanvas
-let artCtx
-let uploadedImage = null
-
-let bpm = 60
-let bpmInterval = null
-
-/* =========================
-CAMBIO DE AMARI
-========================= */
-
-function changeAmari(image, text){
-
-document.getElementById("amari-image").src = "imagen/" + image
-
-document.getElementById("amari-speech").innerHTML =
-"<p class='text-lg'>" + text + "</p>"
-
-}
-
-/* =========================
-NAVEGACIÓN CEREBRO
-========================= */
-
-function activateModule(module){
-
-const map = {
-musicoterapia: "music-module",
-danzaterapia: "dance-module",
-arteterapia: "art-module",
-expresion: "closure-module",
-memoria: "dance-module"
-}
-
-if(map[module]){
-
-document.getElementById(map[module]).scrollIntoView({
-behavior:"smooth"
-})
-
-}
-
-}
-
-/* =========================
-ELEMENTOS MUSICALES
-========================= */
-
-const elementFrequencies = {
-
-tierra: 110,
-agua: 220,
-aire: 440,
-fuego: 880
-
-}
-
-document.querySelectorAll(".element-btn").forEach(btn => {
-
-btn.addEventListener("click", () => {
-
-let element = btn.dataset.element
-
-playElement(element)
-
-})
-
-})
-
-function playElement(element){
-
-if(currentElement === element){
-stopSound()
-return
-}
-
-stopSound()
-
-let freq = elementFrequencies[element]
-
-let osc = audioContext.createOscillator()
-let gain = audioContext.createGain()
-
-osc.frequency.value = freq
-osc.type = "sine"
-
-gain.gain.value = 0.1
-
-osc.connect(gain)
-gain.connect(audioContext.destination)
-
-osc.start()
-
-oscillators[element] = osc
-gainNodes[element] = gain
-
-currentElement = element
-
-}
-
-function stopSound(){
-
-Object.values(oscillators).forEach(o=>{
-try{o.stop()}catch(e){}
-})
-
-oscillators = {}
-gainNodes = {}
-currentElement = null
-
-}
-
-/* =========================
-VISUALIZADOR DE ONDAS
-========================= */
-
-function drawWave(){
-
-ctxWave.clearRect(0,0,canvasWave.width,canvasWave.height)
-
-ctxWave.beginPath()
-
-for(let x=0;x<canvasWave.width;x++){
-
-let y = canvasWave.height/2 +
-Math.sin(x*0.05 + Date.now()*0.003) * 30
-
-if(x===0) ctxWave.moveTo(x,y)
-else ctxWave.lineTo(x,y)
-
-}
-
-ctxWave.strokeStyle = "#8A2BE2"
-ctxWave.lineWidth = 2
-ctxWave.stroke()
-
-requestAnimationFrame(drawWave)
-
-}
-
-drawWave()
-
-/* =========================
-RITMO BPM
-========================= */
-
-function startBPM(){
-
-let circle = document.querySelector(".bpm-circle")
-
-if(bpmInterval) clearInterval(bpmInterval)
-
-bpmInterval = setInterval(()=>{
-
-circle.animate([
-{transform:"scale(0.8)"},
-{transform:"scale(1.2)"},
-{transform:"scale(0.8)"}
-],{duration:600})
-
-},60000/bpm)
-
-}
-
-startBPM()
-
-/* =========================
-LIENZO ARTE
-========================= */
-
-function initArtCanvas(){
-
-artCanvas = document.createElement("canvas")
-artCanvas.width = 800
-artCanvas.height = 400
-
-artCtx = artCanvas.getContext("2d")
-
-document.getElementById("canvas-container").appendChild(artCanvas)
-
-artCanvas.addEventListener("click", addSticker)
-
-}
-
-initArtCanvas()
-
-/* =========================
-STICKERS
-========================= */
-
-function addSticker(e){
-
-let x = e.offsetX
-let y = e.offsetY
-
-artCtx.fillStyle = "rgba(138,43,226,0.6)"
-
-artCtx.beginPath()
-
-artCtx.arc(x,y,20,0,Math.PI*2)
-
-artCtx.fill()
-
-}
-
-/* =========================
-SUBIR IMAGEN
-========================= */
-
-document.getElementById("upload-image").onclick = ()=>{
-
-document.getElementById("image-input").click()
-
-}
-
-document.getElementById("image-input").addEventListener("change", e=>{
-
-let file = e.target.files[0]
-
-let reader = new FileReader()
-
-reader.onload = function(ev){
-
-let img = new Image()
-
-img.onload = ()=>{
-
-artCtx.drawImage(img,0,0,artCanvas.width,artCanvas.height)
-
-}
-
-img.src = ev.target.result
-
-}
-
-reader.readAsDataURL(file)
-
-})
-
-/* =========================
-DESCARGAR ARTE
-========================= */
-
-document.getElementById("download-art").onclick = ()=>{
-
-let link = document.createElement("a")
-
-link.download = "mi_arte.png"
-link.href = artCanvas.toDataURL()
-
-link.click()
-
-}
-
-/* =========================
-PARTÍCULAS p5
-========================= */
-
-new p5(p=>{
-
-let particles=[]
-
-p.setup=()=>{
-
-let canvas=p.createCanvas(window.innerWidth,window.innerHeight)
-canvas.parent("particles-background")
-
-for(let i=0;i<70;i++){
-
-particles.push({
-x:p.random(p.width),
-y:p.random(p.height),
-s:p.random(1,4),
-v:p.random(0.2,1)
-})
-
-}
-
-}
-
-p.draw=()=>{
-
-p.clear()
-
-particles.forEach(pt=>{
-
-p.noStroke()
-p.fill(180,120,255,120)
-
-p.circle(pt.x,pt.y,pt.s)
-
-pt.y-=pt.v
-
-if(pt.y<0){
-
-pt.y=p.height
-pt.x=p.random(p.width)
-
-}
-
-})
-
-}
-
-})
-
-/* =========================
-FULLSCREEN
-========================= */
-
-document.getElementById("fullscreen-btn").onclick = ()=>{
-
-if(!document.fullscreenElement){
-
-document.documentElement.requestFullscreen()
-
-}else{
-
-document.exitFullscreen()
-
-}
-
-}
-
-</script>
+    <script>
+        /* ==========================================
+           1. LOGICA DE AUDIO AVANZADA
+        ========================================== */
+        let audioCtx, mainGain, currentOsc;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                mainGain = audioCtx.createGain();
+                mainGain.connect(audioCtx.destination);
+                mainGain.gain.value = 0.5;
+            }
+        }
+
+        document.querySelectorAll('.element-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                initAudio();
+                const freq = this.dataset.freq;
+                const color = this.dataset.color;
+
+                if (currentOsc) {
+                    currentOsc.stop();
+                    document.querySelectorAll('.element-btn').forEach(b => b.classList.remove('active-element'));
+                    if (currentOsc.freqVal == freq) { currentOsc = null; return; }
+                }
+
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.freqVal = freq;
+
+                g.gain.setValueAtTime(0, audioCtx.currentTime);
+                g.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.5);
+
+                osc.connect(g);
+                g.connect(mainGain);
+                osc.start();
+                currentOsc = osc;
+                this.classList.add('active-element');
+                changeAmari('Casual.png', `Resonando en ${freq}Hz`);
+            });
+        });
+
+        /* ==========================================
+           2. VISUALIZADOR DE FRECUENCIA
+        ========================================== */
+        const fCanv = document.getElementById('freq-canvas');
+        const fCtx = fCanv.getContext('2d');
+        fCanv.width = 800; fCanv.height = 200;
+
+        function drawFreq() {
+            fCtx.clearRect(0, 0, fCanv.width, fCanv.height);
+            fCtx.beginPath();
+            fCtx.strokeStyle = '#00FFFF';
+            fCtx.lineWidth = 4;
+            fCtx.lineJoin = 'round';
+
+            for (let i = 0; i < fCanv.width; i++) {
+                const amp = currentOsc ? 60 : 5;
+                const speed = Date.now() * 0.005;
+                const y = 100 + Math.sin(i * 0.02 + speed) * amp;
+                if (i === 0) fCtx.moveTo(i, y);
+                else fCtx.lineTo(i, y);
+            }
+            fCtx.stroke();
+            requestAnimationFrame(drawFreq);
+        }
+        drawFreq();
+
+        /* ==========================================
+           3. AMARI ASISTENTE Y NAVEGACIÓN
+        ========================================== */
+        function changeAmari(img, text) {
+            const miniImg = document.getElementById('amari-mini-img');
+            const speech = document.getElementById('amari-mini-speech');
+            
+            gsap.to([miniImg, speech], { opacity: 0, scale: 0.8, duration: 0.2, onComplete: () => {
+                miniImg.src = "imagen/" + img;
+                speech.innerText = text;
+                gsap.to([miniImg, speech], { opacity: 1, scale: 1, duration: 0.4, ease: "back.out" });
+            }});
+        }
+
+        function navTo(id) {
+            gsap.to(window, { duration: 1, scrollTo: "#" + id, ease: "power4.inOut" });
+            changeAmari('Caminando1.png', '¡Vamos allá!');
+        }
+
+        function scrollToTop() {
+            gsap.to(window, { duration: 1, scrollTo: 0, ease: "power4.inOut" });
+        }
+
+        /* ==========================================
+           4. SISTEMA DE ARTE P5.JS (FULL)
+        ========================================== */
+        let myP5 = new p5((p) => {
+            let userImg = null;
+            let brushType = 'circle';
+
+            p.setup = () => {
+                let cnv = p.createCanvas(800, 450);
+                cnv.parent('p5-canvas-container');
+                p.background(10, 5, 20);
+            };
+
+            p.draw = () => {
+                let b = document.getElementById('filter-bright').value;
+                p.tint(b, b, b); 
+                if (userImg) p.image(userImg, 0, 0, p.width, p.height);
+            };
+
+            p.mouseDragged = () => {
+                if (p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
+                    p.noStroke();
+                    p.fill(138, 43, 226, 150);
+                    if (brushType === 'circle') p.ellipse(p.mouseX, p.mouseY, 30);
+                    if (brushType === 'flower') {
+                        p.fill(0, 255, 255, 100);
+                        p.text('🌸', p.mouseX, p.mouseY);
+                    }
+                    if (brushType === 'star') p.text('✨', p.mouseX, p.mouseY);
+                }
+            };
+
+            window.loadImg = (url) => {
+                userImg = p.loadImage(url);
+                changeAmari('Casual.png', '¡Qué bella imagen!');
+            };
+
+            window.clearCanvas = () => {
+                p.background(10, 5, 20);
+                userImg = null;
+            };
+
+            window.saveArt = () => p.saveCanvas('mi_alquimia_ecos', 'png');
+
+            document.querySelectorAll('.brush-btn').forEach(btn => {
+                btn.onclick = () => {
+                    brushType = btn.dataset.type;
+                    document.querySelectorAll('.brush-btn').forEach(b => b.classList.remove('active-element'));
+                    btn.classList.add('active-element');
+                }
+            });
+        });
+
+        document.getElementById('btn-upload').onclick = () => document.getElementById('inp-img').click();
+        document.getElementById('inp-img').onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => window.loadImg(ev.target.result);
+            reader.readAsDataURL(file);
+        };
+
+        /* ==========================================
+           5. RITMO Y ORÁCULO
+        ========================================== */
+        let bpm = 60;
+        function adjBPM(v) {
+            bpm += v;
+            if (bpm < 40) bpm = 40;
+            if (bpm > 180) bpm = 180;
+            document.getElementById('val-bpm').innerText = bpm;
+            updatePulse();
+        }
+
+        function updatePulse() {
+            gsap.killTweensOf(".bpm-pulse");
+            gsap.to(".bpm-pulse", {
+                scale: 1.5, opacity: 0, 
+                duration: 60/bpm, 
+                repeat: -1, 
+                ease: "sine.out"
+            });
+        }
+        updatePulse();
+
+        const phrases = [
+            "Tu vibración está alineada con el universo.",
+            "El silencio es el lienzo donde pintas tu paz.",
+            "Cada movimiento tuyo es una oración sin palabras.",
+            "Confía en el ritmo de tu propia raíz.",
+            "Hoy has transformado el ruido en ecos de luz."
+        ];
+
+        function generateOracle() {
+            const txt = phrases[Math.floor(Math.random() * phrases.length)];
+            document.getElementById('oracle-text').innerText = txt;
+            changeAmari('Casual.png', 'Un mensaje para ti');
+        }
+
+        /* ==========================================
+           6. FONDO DE PARTÍCULAS
+        ========================================== */
+        new p5((p) => {
+            let pts = [];
+            p.setup = () => {
+                p.createCanvas(p.windowWidth, p.windowHeight).parent('particles-background');
+                for(let i=0; i<60; i++) pts.push({x: p.random(p.width), y: p.random(p.height), s: p.random(1,3)});
+            };
+            p.draw = () => {
+                p.clear();
+                p.fill(138, 43, 226, 100);
+                pts.forEach(pt => {
+                    p.ellipse(pt.x, pt.y, pt.s);
+                    pt.y -= 0.5;
+                    if (pt.y < 0) pt.y = p.height;
+                });
+            };
+        });
+
+        function toggleFS() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+    </script>
 </body>
 </html>
