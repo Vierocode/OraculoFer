@@ -1,179 +1,777 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Oráculo Interior</title>
-
-<link rel="stylesheet" href="css/estilos.css">
-
-<style>
-
-body{
-background:linear-gradient(180deg,#f4e6ff,#e9d6ff);
-font-family:Arial, sans-serif;
-margin:0;
-text-align:center;
-overflow-x:hidden;
-}
-
-header{
-padding:30px;
-}
-
-h1{
-color:#6a3fa0;
-font-size:40px;
-}
-
-#brain{
-width:200px;
-cursor:pointer;
-transition:transform .4s;
-}
-
-#brain:hover{
-transform:scale(1.1);
-}
-
-#modulos{
-margin-top:40px;
-display:flex;
-justify-content:center;
-gap:40px;
-flex-wrap:wrap;
-}
-
-.modulo{
-width:180px;
-background:white;
-padding:20px;
-border-radius:20px;
-box-shadow:0 10px 20px rgba(0,0,0,.1);
-transition:.4s;
-}
-
-.modulo:hover{
-transform:translateY(-10px);
-}
-
-.modulo img{
-width:120px;
-}
-
-/* PERSONAJE FER */
-
-#fer{
-position:fixed;
-bottom:10px;
-left:-150px;
-width:120px;
-transition:1s;
-z-index:999;
-}
-
-#fer img{
-width:100%;
-}
-
-#dialogo{
-position:absolute;
-bottom:120px;
-left:0;
-background:white;
-padding:10px 15px;
-border-radius:20px;
-box-shadow:0 5px 10px rgba(0,0,0,.2);
-display:none;
-font-size:14px;
-}
-
-/* animacion caminar */
-
-.caminar{
-animation:caminar 20s linear infinite;
-}
-
-@keyframes caminar{
-
-0%{ left:-150px }
-
-50%{ left:40% }
-
-100%{ left:100% }
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ECOS DE RAÍZ - Alquimia Sensorial</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Three.js and Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    
+    <style>
+        /* Custom styles for organic feel */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b3a 100%);
+            min-height: 100vh;
+            color: #e0d0ff;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, .serif-text {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Glowing effects */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+        
+        .glow-box {
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        }
+        
+        /* Brain region hover effects */
+        .brain-region {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        }
+        
+        .brain-region:hover {
+            filter: drop-shadow(0 0 15px currentColor);
+            transform: scale(1.02);
+        }
+        
+        /* Speech bubble styles */
+        .speech-bubble {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 15px 25px;
+            color: white;
+            font-family: 'Playfair Display', serif;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: rgba(138, 43, 226, 0.3) transparent transparent;
+        }
+        
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 20px;
+        }
+        
+        /* Animated circle for BPM */
+        .bpm-circle {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #8A2BE2 0%, #4B0082 100%);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.8; }
+        }
+        
+        /* Canvas container */
+        #canvas-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.3);
+        }
+        
+        /* Navigation dots */
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(138, 43, 226, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dot.active {
+            background: #8A2BE2;
+            box-shadow: 0 0 15px #8A2BE2;
+            transform: scale(1.2);
+        }
+        
+        /* Fullscreen mode */
+        .fullscreen-mode {
+            background: linear-gradient(135deg, #4B0082 0%, #9400D3 100%) !important;
+        }
+        
+        .fullscreen-mode .hide-in-fullscreen {
+            display: none !important;
+        }
+    </style>
 </head>
+<body class="relative">
+    <!-- Floating particles background (p5.js will handle this) -->
+    <div id="particles-background"></div>
+    
+    <!-- Main Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-card m-4 p-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+            <span class="serif-text text-xl glow-text">ECOS DE RAÍZ</span>
+        </div>
+        
+        <div class="flex space-x-4">
+            <div class="nav-dot active"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+        </div>
+        
+        <button id="fullscreen-btn" class="px-4 py-2 glass-card hover:bg-purple-500/20 transition">
+            <i class="fas fa-expand"></i>
+        </button>
+    </nav>
+    
+    <!-- Main Content with Brain Navigation -->
+    <main class="container mx-auto px-4 pt-24 pb-12">
+        <!-- Welcome Section with Amari -->
+        <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+            <div class="md:w-1/2 relative">
+                <!-- Amari's image with speech bubble -->
+                <div class="relative inline-block">
+                    <img src="imagen/Recepcion.png" alt="Amari" class="rounded-2xl max-w-xs glow-box" id="amari-image">
+                    <div class="speech-bubble absolute -top-20 left-1/2 transform -translate-x-1/2 w-64 text-center" id="amari-speech">
+                        <p class="text-lg">✨ Hola, soy Amari ✨</p>
+                        <p class="text-sm opacity-80">Tu guía en este viaje sensorial</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation buttons for different Amari expressions -->
+                <div class="flex mt-4 space-x-2 justify-center">
+                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Recepcion.png', '✨ Hola, soy Amari ✨')">
+                        <i class="fas fa-hand-peace"></i>
+                    </button>
+                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Caminando1.png', 'Vamos a movernos juntas 🌸')">
+                        <i class="fas fa-walking"></i>
+                    </button>
+                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Casual.png', '¿Cómo te sientes hoy? 💜')">
+                        <i class="fas fa-smile"></i>
+                    </button>
+                    <button class="px-3 py-1 glass-card text-sm hover:bg-purple-500/30" onclick="changeAmari('Pensando.png', 'Explora tu interior... 🧠')">
+                        <i class="fas fa-brain"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Brain SVG Navigation -->
+            <div class="md:w-1/2 relative mt-8 md:mt-0">
+                <svg viewBox="0 0 400 300" class="w-full h-auto">
+                    <!-- Brain silhouette background -->
+                    <path d="M150,80 Q200,40 250,80 Q280,100 260,140 Q280,180 240,200 Q200,230 160,200 Q120,180 140,140 Q120,100 150,80" 
+                          fill="none" stroke="#4B0082" stroke-width="2" stroke-opacity="0.3"/>
+                    
+                    <!-- Cuerpo Calloso (Violeta) -->
+                    <path id="corpus-callosum" 
+                          d="M180,120 L220,120" 
+                          stroke="#8A2BE2" stroke-width="8" stroke-linecap="round" class="brain-region" style="color: #8A2BE2;"
+                          onclick="activateModule('arteterapia')"/>
+                    
+                    <!-- Corteza Prefrontal (Azul Cian) -->
+                    <circle id="prefrontal" cx="200" cy="90" r="20" 
+                            fill="none" stroke="#00FFFF" stroke-width="3" class="brain-region" style="color: #00FFFF;"
+                            onclick="activateModule('musicoterapia')"/>
+                    
+                    <!-- Hipocampo (Verde Esmeralda) - izquierdo -->
+                    <path id="hippocampus-left" 
+                          d="M150,160 Q170,150 150,140" 
+                          stroke="#50C878" stroke-width="5" fill="none" class="brain-region" style="color: #50C878;"
+                          onclick="activateModule('memoria')"/>
+                    
+                    <!-- Hipocampo (Verde Esmeralda) - derecho -->
+                    <path id="hippocampus-right" 
+                          d="M250,160 Q230,150 250,140" 
+                          stroke="#50C878" stroke-width="5" fill="none" class="brain-region" style="color: #50C878;"
+                          onclick="activateModule('memoria')"/>
+                    
+                    <!-- Amígdala (Rojo Coral) -->
+                    <circle id="amygdala" cx="180" cy="170" r="8" 
+                            fill="none" stroke="#FF7F50" stroke-width="3" class="brain-region" style="color: #FF7F50;"
+                            onclick="activateModule('danzaterapia')"/>
+                    
+                    <!-- Área del Lenguaje (Amarillo Oro) -->
+                    <path id="language-area" 
+                          d="M220,110 L240,130 L220,130 Z" 
+                          stroke="#FFD700" stroke-width="3" fill="none" class="brain-region" style="color: #FFD700;"
+                          onclick="activateModule('expresion')"/>
+                    
+                    <!-- Labels -->
+                    <text x="260" y="80" fill="#00FFFF" font-size="10" class="serif-text">Claridad</text>
+                    <text x="220" y="40" fill="#8A2BE2" font-size="10" class="serif-text">Integración</text>
+                    <text x="120" y="130" fill="#50C878" font-size="10" class="serif-text">Memoria</text>
+                    <text x="280" y="180" fill="#FF7F50" font-size="10" class="serif-text">Liberación</text>
+                    <text x="260" y="140" fill="#FFD700" font-size="10" class="serif-text">Expresión</text>
+                </svg>
+                
+                <p class="text-center text-sm opacity-60 mt-2">Toca cualquier área del cerebro para comenzar</p>
+            </div>
+        </div>
+        
+        <!-- Módulo de Musicoterapia: "Sintonizador Emocional" -->
+        <section id="music-module" class="glass-card p-6 mb-8">
+            <h2 class="serif-text text-2xl mb-4 flex items-center">
+                <i class="fas fa-headphones-alt text-purple-400 mr-2"></i>
+                Sintonizador Emocional
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Audio Controls -->
+                <div>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="tierra">
+                            <i class="fas fa-mountain text-2xl text-amber-600"></i>
+                            <span>Tierra</span>
+                        </button>
+                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="agua">
+                            <i class="fas fa-water text-2xl text-blue-400"></i>
+                            <span>Agua</span>
+                        </button>
+                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="aire">
+                            <i class="fas fa-wind text-2xl text-cyan-200"></i>
+                            <span>Aire</span>
+                        </button>
+                        <button class="element-btn py-3 glass-card hover:bg-purple-500/30 transition flex flex-col items-center" data-element="fuego">
+                            <i class="fas fa-fire text-2xl text-orange-500"></i>
+                            <span>Fuego</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Crossfade slider -->
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Transición suave</label>
+                        <input type="range" min="0" max="100" value="50" class="w-full accent-purple-500" id="crossfade">
+                    </div>
+                    
+                    <!-- Vibration patterns -->
+                    <button id="vibration-btn" class="w-full py-3 glass-card hover:bg-purple-500/30 transition mb-2">
+                        <i class="fas fa-mobile-alt mr-2"></i> Sentir el pulso
+                    </button>
+                </div>
+                
+                <!-- Visualizador de Ondas -->
+                <div>
+                    <canvas id="waveform" width="400" height="200" class="w-full bg-black/20 rounded-lg"></canvas>
+                    <p class="text-center text-sm mt-2 opacity-60">Visualización de frecuencias</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Módulo de Danzaterapia: "Guía de Movimiento y Ritmo" -->
+        <section id="dance-module" class="glass-card p-6 mb-8">
+            <h2 class="serif-text text-2xl mb-4 flex items-center">
+                <i class="fas fa-heartbeat text-purple-400 mr-2"></i>
+                Guía de Movimiento y Ritmo
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- BPM Counter -->
+                <div class="flex flex-col items-center justify-center">
+                    <div class="bpm-circle mb-4"></div>
+                    <p class="text-xl">60 BPM - Ritmo cardíaco</p>
+                    <p class="text-sm opacity-60">Respira con el círculo</p>
+                </div>
+                
+                <!-- Motion Detection Info (simulated) -->
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-child text-6xl text-purple-400"></i>
+                    </div>
+                    <p class="mb-2">Movimiento detectado:</p>
+                    <div class="flex justify-center space-x-2">
+                        <span class="px-3 py-1 glass-card">Brazos ✨</span>
+                        <span class="px-3 py-1 glass-card">Cabeza 🌸</span>
+                    </div>
+                    <p class="text-xs mt-4 opacity-60">Tu movimiento crea arte en tiempo real</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Módulo de Arteterapia Digital: "Lienzo de Transformación" -->
+        <section id="art-module" class="glass-card p-6 mb-8">
+            <h2 class="serif-text text-2xl mb-4 flex items-center">
+                <i class="fas fa-paint-brush text-purple-400 mr-2"></i>
+                Lienzo de Transformación
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Controls -->
+                <div>
+                    <button id="upload-image" class="w-full py-3 glass-card hover:bg-purple-500/30 transition mb-4">
+                        <i class="fas fa-upload mr-2"></i> Subir tu foto
+                    </button>
+                    <input type="file" id="image-input" accept="image/*" class="hidden">
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Brillo</label>
+                        <input type="range" min="0" max="200" value="100" class="w-full accent-purple-500" id="brightness">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Contraste</label>
+                        <input type="range" min="0" max="200" value="100" class="w-full accent-purple-500" id="contrast">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm mb-2">Saturación</label>
+                        <input type="range" min="0" max="200" value="100" class="w-full accent-purple-500" id="saturation">
+                    </div>
+                    
+                    <button id="download-art" class="w-full py-3 glass-card hover:bg-purple-500/30 transition">
+                        <i class="fas fa-download mr-2"></i> Descargar mi obra
+                    </button>
+                </div>
+                
+                <!-- Canvas for Art -->
+                <div class="lg:col-span-2">
+                    <div id="canvas-container"></div>
+                    
+                    <!-- Stickers/Shapes -->
+                    <div class="flex mt-4 space-x-2 overflow-x-auto py-2">
+                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="flower">
+                            <i class="fas fa-seedling text-2xl text-green-400"></i>
+                        </button>
+                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="mandala">
+                            <i class="fas fa-circle text-2xl text-purple-400"></i>
+                        </button>
+                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="sparkle">
+                            <i class="fas fa-star text-2xl text-yellow-400"></i>
+                        </button>
+                        <button class="sticker-btn flex-shrink-0 w-16 h-16 glass-card hover:bg-purple-500/30" data-shape="root">
+                            <i class="fas fa-tree text-2xl text-amber-600"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Módulo de Cierre: "El Oráculo" -->
+        <section id="closure-module" class="glass-card p-6">
+            <h2 class="serif-text text-2xl mb-4 flex items-center">
+                <i class="fas fa-crystal-ball text-purple-400 mr-2"></i>
+                Tu Carta Vital
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Preview of generated art -->
+                <div class="glass-card p-4">
+                    <div id="final-art-preview" class="w-full h-48 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg mb-4">
+                        <!-- Generated preview will go here -->
+                    </div>
+                    <button id="generate-pdf" class="w-full py-3 glass-card hover:bg-purple-500/30 transition">
+                        <i class="fas fa-file-pdf mr-2"></i> Generar Manifiesto
+                    </button>
+                </div>
+                
+                <!-- Emotional data summary -->
+                <div class="glass-card p-4">
+                    <h3 class="serif-text text-lg mb-3">Resumen de tu viaje</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Colores predominantes:</span>
+                            <span class="flex space-x-1">
+                                <span class="w-4 h-4 bg-purple-600 rounded-full"></span>
+                                <span class="w-4 h-4 bg-blue-400 rounded-full"></span>
+                                <span class="w-4 h-4 bg-pink-400 rounded-full"></span>
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Ritmo promedio:</span>
+                            <span>72 BPM</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Intensidad de movimiento:</span>
+                            <span>Fluido 🌊</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-purple-500/20 rounded-lg">
+                        <p class="text-sm italic">
+                            "Tu energía fluyó como agua que encuentra su cauce, 
+                            transformando cada movimiento en luz violeta..."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Floating Action Button for device motion -->
+    <button id="motion-btn" class="fixed bottom-6 right-6 w-16 h-16 rounded-full glass-card hover:bg-purple-500/30 transition flex items-center justify-center">
+        <i class="fas fa-compass text-2xl"></i>
+    </button>
 
-<body>
+   <script>
 
-<header>
+/* =========================
+VARIABLES GLOBALES
+========================= */
 
-<h1>🧠 Viaje Interior</h1>
-<p>Un espacio para reconectar contigo</p>
+let currentElement = null
+let audioContext = new (window.AudioContext || window.webkitAudioContext)()
+let oscillators = {}
+let gainNodes = {}
 
-</header>
+let canvasWave = document.getElementById("waveform")
+let ctxWave = canvasWave.getContext("2d")
 
-<main>
+let artCanvas
+let artCtx
+let uploadedImage = null
 
-<section id="cerebro">
+let bpm = 60
+let bpmInterval = null
 
-<h2>Explora tu mente</h2>
+/* =========================
+CAMBIO DE AMARI
+========================= */
 
-<img src="assets/cerebro.svg" id="brain">
+function changeAmari(image, text){
 
-</section>
+document.getElementById("amari-image").src = "imagen/" + image
 
-<section id="modulos">
+document.getElementById("amari-speech").innerHTML =
+"<p class='text-lg'>" + text + "</p>"
 
-<div class="modulo">
-<img src="imagen/Pensando.png">
-<h3>Reflexión</h3>
-<p>Explora tus pensamientos</p>
-</div>
+}
 
-<div class="modulo">
-<img src="imagen/Casual.png">
-<h3>Equilibrio</h3>
-<p>Encuentra tu centro</p>
-</div>
+/* =========================
+NAVEGACIÓN CEREBRO
+========================= */
 
-<div class="modulo">
-<img src="imagen/Caminando1.png">
-<h3>Proceso</h3>
-<p>Avanza paso a paso</p>
-</div>
+function activateModule(module){
 
-<div class="modulo">
-<img src="imagen/Recepcion.png">
-<h3>Integración</h3>
-<p>Recibe tu aprendizaje</p>
-</div>
+const map = {
+musicoterapia: "music-module",
+danzaterapia: "dance-module",
+arteterapia: "art-module",
+expresion: "closure-module",
+memoria: "dance-module"
+}
 
-</section>
+if(map[module]){
 
-</main>
+document.getElementById(map[module]).scrollIntoView({
+behavior:"smooth"
+})
 
-<!-- PERSONAJE GUIA -->
+}
 
-<div id="fer" class="caminar">
+}
 
-<div id="dialogo"></div>
+/* =========================
+ELEMENTOS MUSICALES
+========================= */
 
-<img src="imagen/Casual.png">
+const elementFrequencies = {
 
-</div>
+tierra: 110,
+agua: 220,
+aire: 440,
+fuego: 880
 
-<script src="js/app.js"></script>
-<script src="js/fer.js"></script>
-<script src="js/cerebro.js"></script>
-<script src="js/mandala.js"></script>
+}
 
+document.querySelectorAll(".element-btn").forEach(btn => {
+
+btn.addEventListener("click", () => {
+
+let element = btn.dataset.element
+
+playElement(element)
+
+})
+
+})
+
+function playElement(element){
+
+if(currentElement === element){
+stopSound()
+return
+}
+
+stopSound()
+
+let freq = elementFrequencies[element]
+
+let osc = audioContext.createOscillator()
+let gain = audioContext.createGain()
+
+osc.frequency.value = freq
+osc.type = "sine"
+
+gain.gain.value = 0.1
+
+osc.connect(gain)
+gain.connect(audioContext.destination)
+
+osc.start()
+
+oscillators[element] = osc
+gainNodes[element] = gain
+
+currentElement = element
+
+}
+
+function stopSound(){
+
+Object.values(oscillators).forEach(o=>{
+try{o.stop()}catch(e){}
+})
+
+oscillators = {}
+gainNodes = {}
+currentElement = null
+
+}
+
+/* =========================
+VISUALIZADOR DE ONDAS
+========================= */
+
+function drawWave(){
+
+ctxWave.clearRect(0,0,canvasWave.width,canvasWave.height)
+
+ctxWave.beginPath()
+
+for(let x=0;x<canvasWave.width;x++){
+
+let y = canvasWave.height/2 +
+Math.sin(x*0.05 + Date.now()*0.003) * 30
+
+if(x===0) ctxWave.moveTo(x,y)
+else ctxWave.lineTo(x,y)
+
+}
+
+ctxWave.strokeStyle = "#8A2BE2"
+ctxWave.lineWidth = 2
+ctxWave.stroke()
+
+requestAnimationFrame(drawWave)
+
+}
+
+drawWave()
+
+/* =========================
+RITMO BPM
+========================= */
+
+function startBPM(){
+
+let circle = document.querySelector(".bpm-circle")
+
+if(bpmInterval) clearInterval(bpmInterval)
+
+bpmInterval = setInterval(()=>{
+
+circle.animate([
+{transform:"scale(0.8)"},
+{transform:"scale(1.2)"},
+{transform:"scale(0.8)"}
+],{duration:600})
+
+},60000/bpm)
+
+}
+
+startBPM()
+
+/* =========================
+LIENZO ARTE
+========================= */
+
+function initArtCanvas(){
+
+artCanvas = document.createElement("canvas")
+artCanvas.width = 800
+artCanvas.height = 400
+
+artCtx = artCanvas.getContext("2d")
+
+document.getElementById("canvas-container").appendChild(artCanvas)
+
+artCanvas.addEventListener("click", addSticker)
+
+}
+
+initArtCanvas()
+
+/* =========================
+STICKERS
+========================= */
+
+function addSticker(e){
+
+let x = e.offsetX
+let y = e.offsetY
+
+artCtx.fillStyle = "rgba(138,43,226,0.6)"
+
+artCtx.beginPath()
+
+artCtx.arc(x,y,20,0,Math.PI*2)
+
+artCtx.fill()
+
+}
+
+/* =========================
+SUBIR IMAGEN
+========================= */
+
+document.getElementById("upload-image").onclick = ()=>{
+
+document.getElementById("image-input").click()
+
+}
+
+document.getElementById("image-input").addEventListener("change", e=>{
+
+let file = e.target.files[0]
+
+let reader = new FileReader()
+
+reader.onload = function(ev){
+
+let img = new Image()
+
+img.onload = ()=>{
+
+artCtx.drawImage(img,0,0,artCanvas.width,artCanvas.height)
+
+}
+
+img.src = ev.target.result
+
+}
+
+reader.readAsDataURL(file)
+
+})
+
+/* =========================
+DESCARGAR ARTE
+========================= */
+
+document.getElementById("download-art").onclick = ()=>{
+
+let link = document.createElement("a")
+
+link.download = "mi_arte.png"
+link.href = artCanvas.toDataURL()
+
+link.click()
+
+}
+
+/* =========================
+PARTÍCULAS p5
+========================= */
+
+new p5(p=>{
+
+let particles=[]
+
+p.setup=()=>{
+
+let canvas=p.createCanvas(window.innerWidth,window.innerHeight)
+canvas.parent("particles-background")
+
+for(let i=0;i<70;i++){
+
+particles.push({
+x:p.random(p.width),
+y:p.random(p.height),
+s:p.random(1,4),
+v:p.random(0.2,1)
+})
+
+}
+
+}
+
+p.draw=()=>{
+
+p.clear()
+
+particles.forEach(pt=>{
+
+p.noStroke()
+p.fill(180,120,255,120)
+
+p.circle(pt.x,pt.y,pt.s)
+
+pt.y-=pt.v
+
+if(pt.y<0){
+
+pt.y=p.height
+pt.x=p.random(p.width)
+
+}
+
+})
+
+}
+
+})
+
+/* =========================
+FULLSCREEN
+========================= */
+
+document.getElementById("fullscreen-btn").onclick = ()=>{
+
+if(!document.fullscreenElement){
+
+document.documentElement.requestFullscreen()
+
+}else{
+
+document.exitFullscreen()
+
+}
+
+}
+
+</script>
 </body>
 </html>
