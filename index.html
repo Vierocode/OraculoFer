@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Oráculo Interior</title>
+
+<link rel="stylesheet" href="css/estilos.css">
+
+<style>
+
+body{
+background:linear-gradient(180deg,#f4e6ff,#e9d6ff);
+font-family:Arial, sans-serif;
+margin:0;
+text-align:center;
+overflow-x:hidden;
+}
+
+header{
+padding:30px;
+}
+
+h1{
+color:#6a3fa0;
+font-size:40px;
+}
+
+#brain{
+width:200px;
+cursor:pointer;
+transition:transform .4s;
+}
+
+#brain:hover{
+transform:scale(1.1);
+}
+
+#modulos{
+margin-top:40px;
+display:flex;
+justify-content:center;
+gap:40px;
+flex-wrap:wrap;
+}
+
+.modulo{
+width:180px;
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 20px rgba(0,0,0,.1);
+transition:.4s;
+}
+
+.modulo:hover{
+transform:translateY(-10px);
+}
+
+.modulo img{
+width:120px;
+}
+
+/* PERSONAJE FER */
+
+#fer{
+position:fixed;
+bottom:10px;
+left:-150px;
+width:120px;
+transition:1s;
+z-index:999;
+}
+
+#fer img{
+width:100%;
+}
+
+#dialogo{
+position:absolute;
+bottom:120px;
+left:0;
+background:white;
+padding:10px 15px;
+border-radius:20px;
+box-shadow:0 5px 10px rgba(0,0,0,.2);
+display:none;
+font-size:14px;
+}
+
+/* animacion caminar */
+
+.caminar{
+animation:caminar 20s linear infinite;
+}
+
+@keyframes caminar{
+
+0%{ left:-150px }
+
+50%{ left:40% }
+
+100%{ left:100% }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🧠 Viaje Interior</h1>
+<p>Un espacio para reconectar contigo</p>
+
+</header>
+
+<main>
+
+<section id="cerebro">
+
+<h2>Explora tu mente</h2>
+
+<img src="assets/cerebro.svg" id="brain">
+
+</section>
+
+<section id="modulos">
+
+<div class="modulo">
+<img src="imagen/Pensando.png">
+<h3>Reflexión</h3>
+<p>Explora tus pensamientos</p>
+</div>
+
+<div class="modulo">
+<img src="imagen/Casual.png">
+<h3>Equilibrio</h3>
+<p>Encuentra tu centro</p>
+</div>
+
+<div class="modulo">
+<img src="imagen/Caminando1.png">
+<h3>Proceso</h3>
+<p>Avanza paso a paso</p>
+</div>
+
+<div class="modulo">
+<img src="imagen/Recepcion.png">
+<h3>Integración</h3>
+<p>Recibe tu aprendizaje</p>
+</div>
+
+</section>
+
+</main>
+
+<!-- PERSONAJE GUIA -->
+
+<div id="fer" class="caminar">
+
+<div id="dialogo"></div>
+
+<img src="imagen/Casual.png">
+
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/fer.js"></script>
+<script src="js/cerebro.js"></script>
+<script src="js/mandala.js"></script>
+
+</body>
+</html>

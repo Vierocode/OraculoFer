@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Oráculo del Cierre</title>
+
+<style>
+
+/* ---------------- */
+/* ESTILO GENERAL */
+/* ---------------- */
+
+body{
+
+background:linear-gradient(#120d1f,#1e1633);
+font-family:Arial;
+color:white;
+margin:0;
+overflow-x:hidden;
+
+}
+
+/* encabezado */
+
+header{
+
+text-align:center;
+padding:30px;
+
+}
+
+/* contenedor */
+
+.container{
+
+max-width:900px;
+margin:auto;
+padding:20px;
+
+}
+
+/* botones */
+
+button{
+
+background:#b77cff;
+border:none;
+padding:12px 20px;
+border-radius:20px;
+color:white;
+font-size:16px;
+cursor:pointer;
+margin:10px;
+
+}
+
+/* ---------------- */
+/* CEREBRO */
+/* ---------------- */
+
+.brain{
+
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+margin-top:40px;
+
+}
+
+.brain div{
+
+background:#2c2149;
+border-radius:20px;
+padding:30px;
+text-align:center;
+cursor:pointer;
+transition:0.3s;
+
+}
+
+.brain div:hover{
+
+transform:scale(1.05);
+background:#7b4fff;
+
+}
+
+/* ---------------- */
+/* FER */
+/* ---------------- */
+
+#fer{
+
+position:fixed;
+bottom:20px;
+left:20px;
+width:160px;
+transition:3s linear;
+z-index:1000;
+
+}
+
+#fer img{
+
+width:100%;
+
+}
+
+/* globo */
+
+#dialogo{
+
+position:absolute;
+bottom:170px;
+left:-40px;
+
+background:white;
+color:black;
+
+padding:12px;
+border-radius:20px;
+
+width:200px;
+
+display:none;
+
+}
+
+#dialogo:after{
+
+content:"";
+position:absolute;
+bottom:-12px;
+left:80px;
+
+border-width:12px;
+border-style:solid;
+border-color:white transparent transparent transparent;
+
+}
+
+/* ---------------- */
+/* MODULOS */
+/* ---------------- */
+
+.modulo{
+
+display:none;
+
+padding:30px;
+
+background:#21173b;
+border-radius:20px;
+margin-top:30px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>✨ Viaje Interior ✨</h1>
+<p>Explora tu mente y emociones</p>
+
+</header>
+
+<div class="container">
+
+<h2>🧠 Toca una parte del cerebro</h2>
+
+<div class="brain">
+
+<div onclick="abrirModulo('emocion')">❤️ Amígdala</div>
+
+<div onclick="abrirModulo('arte')">🎨 Integración</div>
+
+<div onclick="abrirModulo('memoria')">🌿 Memoria</div>
+
+<div onclick="abrirModulo('expresion')">🗣 Expresión</div>
+
+<div onclick="abrirModulo('equilibrio')">💫 Equilibrio</div>
+
+</div>
+
+<!-- módulos -->
+
+<div id="emocion" class="modulo">
+
+<h3>Descarga emocional</h3>
+
+<p>Mueve el celular para liberar tensión.</p>
+
+</div>
+
+<div id="arte" class="modulo">
+
+<h3>Arte terapia</h3>
+
+<p>Dibuja lo que sientes.</p>
+
+<canvas id="canvasArte" width="400" height="250" style="background:#111;border-radius:10px;"></canvas>
+
+</div>
+
+<div id="memoria" class="modulo">
+
+<h3>Memoria sensorial</h3>
+
+<p>Recuerda un momento importante.</p>
+
+</div>
+
+<div id="expresion" class="modulo">
+
+<h3>Expresión</h3>
+
+<p>Escribe lo que sientes.</p>
+
+</div>
+
+<div id="equilibrio" class="modulo">
+
+<h3>Integración</h3>
+
+<p>Respira profundo.</p>
+
+</div>
+
+</div>
+
+<!-- FER -->
+
+<div id="fer">
+
+<div id="dialogo"></div>
+
+<img src="imagen/Casual.png">
+
+</div>
+
+<script>/* ---------------- */
+/* MODULOS */
+/* ---------------- */
+
+function abrirModulo(id){
+
+let modulos = document.querySelectorAll(".modulo")
+
+modulos.forEach(m => m.style.display="none")
+
+document.getElementById(id).style.display="block"
+
+if(id=="emocion"){
+
+cambiarFer("imagen/Pensando.png")
+hablar("💜 Este ejercicio ayuda a liberar emociones acumuladas.")
+
+}
+
+if(id=="arte"){
+
+cambiarFer("imagen/Casual.png")
+hablar("🎨 El arte activa partes profundas de tu mente.")
+
+}
+
+if(id=="memoria"){
+
+cambiarFer("imagen/Pensando.png")
+hablar("🧠 Este ejercicio fortalece tu memoria.")
+
+}
+
+if(id=="expresion"){
+
+cambiarFer("imagen/Recepcion.png")
+hablar("🗣 Expresar lo que sientes ayuda a sanar.")
+
+}
+
+if(id=="equilibrio"){
+
+cambiarFer("imagen/Caminando1.png")
+hablar("🌬 Respira profundo y encuentra tu equilibrio.")
+
+}
+
+}
+
+/* ---------------- */
+/* FER SISTEMA */
+/* ---------------- */
+
+let fer = document.getElementById("fer")
+let dialogo = document.getElementById("dialogo")
+let ferImg = document.querySelector("#fer img")
+
+let ultimaInteraccion = Date.now()
+
+/* cambiar imagen */
+
+function cambiarFer(img){
+
+ferImg.src = img
+
+}
+
+/* registrar actividad */
+
+document.onclick = registrar
+document.onmousemove = registrar
+document.onkeydown = registrar
+
+function registrar(){
+
+ultimaInteraccion = Date.now()
+
+}
+
+/* caminar */
+
+function caminar(){
+
+let ancho = window.innerWidth - 200
+
+let pos = Math.random() * ancho
+
+fer.style.left = pos + "px"
+
+cambiarFer("imagen/Caminando1.png")
+
+}
+
+/* hablar */
+
+function hablar(texto){
+
+dialogo.innerText = texto
+
+dialogo.style.display="block"
+
+setTimeout(()=>{
+
+dialogo.style.display="none"
+
+},5000)
+
+}
+
+/* frases */
+
+let frases = [
+
+"🌸 Hola, soy Fer",
+"💜 Explora tu mente",
+"✨ Este viaje es tuyo",
+"😊 Sigue avanzando"
+
+]
+
+/* comportamiento */
+
+setInterval(()=>{
+
+caminar()
+
+let frase = frases[Math.floor(Math.random()*frases.length)]
+
+hablar(frase)
+
+},15000)
+
+/* detectar inactividad */
+
+setInterval(()=>{
+
+let ahora = Date.now()
+
+let tiempo = (ahora - ultimaInteraccion) / 1000
+
+if(tiempo > 25){
+
+cambiarFer("imagen/Pensando.png")
+
+hablar("👀 ¿Sigues aquí?")
+
+}
+
+},5000)
+
+/* ---------------- */
+/* ACTIVIDAD DIBUJO */
+/* ---------------- */
+
+function iniciarDibujo(){
+
+let canvas = document.getElementById("canvasArte")
+
+let ctx = canvas.getContext("2d")
+
+let dibujando=false
+
+canvas.onmousedown=()=>dibujando=true
+canvas.onmouseup=()=>dibujando=false
+
+canvas.onmousemove=(e)=>{
+
+if(!dibujando) return
+
+ctx.fillStyle="white"
+
+ctx.fillRect(e.offsetX,e.offsetY,4,4)
+
+}
+
+}
+
+/* iniciar dibujo si existe */
+
+setTimeout(()=>{
+
+if(document.getElementById("canvasArte")){
+
+iniciarDibujo()
+
+}
+
+},500)
+</script>
+
+</body>
+</html>
