@@ -1,539 +1,1230 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>ECOS DE RAÍZ | Alquimia Sensorial Premium</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@100;300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
 
-    <style>
-        :root {
-            --p-purple: #8A2BE2;
-            --s-cyan: #00FFFF;
-            --t-pink: #FF1493;
-            --bg-dark: #07020d;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f0eaff;
-            overflow-x: hidden;
-            background: radial-gradient(circle at top right, #1a0b2e 0%, #07020d 100%);
-        }
+<title>ECOS DE RAÍZ | Experiencia Sensorial</title>
 
-        .serif { font-family: 'Playfair Display', serif; }
+<script src="https://cdn.tailwindcss.com"></script>
 
-        /* --- MENÚ NEBULOSA (REDISEÑADO) --- */
-        #nav-nebula {
-            position: fixed;
-            top: 25px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            width: 90%;
-            max-width: 600px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 
-        .nav-blur {
-            background: rgba(15, 5, 25, 0.6);
-            backdrop-filter: blur(25px);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            padding: 8px 20px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        .nav-btn {
-            color: rgba(255,255,255,0.5);
-            font-size: 1.2rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            padding: 10px;
-            border-radius: 50%;
-        }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
 
-        .nav-btn.active {
-            color: var(--s-cyan);
-            background: rgba(0, 255, 255, 0.1);
-            transform: scale(1.2);
-            text-shadow: 0 0 10px var(--s-cyan);
-        }
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
 
-        /* --- AMARI FLOATING ASSISTANT (PiP) --- */
-        #amari-pip {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 130px;
-            z-index: 9999;
-            transition: transform 0.3s ease;
-        }
+<style>
 
-        .amari-window {
-            background: rgba(20, 10, 40, 0.85);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--p-purple);
-            border-radius: 30px;
-            padding: 12px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-        }
+/* ==================================================
+ROOT VARIABLES
+================================================== */
 
-        #amari-avatar {
-            width: 75px; height: 75px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            border: 2px solid var(--s-cyan);
-            object-fit: cover;
-            animation: pulse-border 3s infinite;
-        }
+:root{
 
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(0, 255, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
-        }
+--primary:#8A2BE2;
+--secondary:#00FFFF;
+--accent:#FF1493;
 
-        .amari-msg {
-            font-size: 10px;
-            line-height: 1.2;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 6px;
-            color: #d1b3ff;
-        }
+--bg-dark:#07020d;
+--bg-glass:rgba(255,255,255,0.04);
+--border:rgba(255,255,255,0.1);
 
-        /* --- GLASS PANELS & UI --- */
-        .module-card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 35px;
-            margin-bottom: 50px;
-            transition: all 0.4s ease;
-        }
+--text-main:#f0eaff;
 
-        .module-card:hover { border-color: var(--p-purple); }
+--transition:0.4s ease;
 
-        .btn-main {
-            background: linear-gradient(135deg, var(--p-purple), var(--t-pink));
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 11px;
-            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
-            transition: all 0.3s;
-        }
+}
 
-        .btn-main:active { transform: scale(0.95); }
+/* ==================================================
+TEMAS DINÁMICOS
+================================================== */
 
-        /* --- FREQUENCY VISUALIZER --- */
-        #freq-container {
-            width: 100%;
-            height: 150px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 25px;
-            overflow: hidden;
-            position: relative;
-        }
+.theme-male{
 
-        /* --- HISTORIAL DE ALQUIMIA --- */
-        #alchemy-log {
-            max-height: 200px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-        }
+--primary:#1e3a8a;
+--secondary:#3b82f6;
+--accent:#f59e0b;
 
-        #alchemy-log div {
-            border-left: 2px solid var(--s-cyan);
-            padding-left: 15px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            opacity: 0.8;
-        }
+}
 
-        /* --- ANIMACIONES --- */
-        .fade-in { opacity: 0; transform: translateY(30px); }
-        
-        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; }
-    </style>
-</head>
+.theme-female{
+
+--primary:#a855f7;
+--secondary:#ec4899;
+--accent:#fbbf24;
+
+}
+
+.theme-neutral{
+
+--primary:#10b981;
+--secondary:#14b8a6;
+--accent:#94a3b8;
+
+}
+
+/* ==================================================
+RESET
+================================================== */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+body{
+
+font-family:'Inter',sans-serif;
+background-color:var(--bg-dark);
+color:var(--text-main);
+
+overflow-x:hidden;
+
+background:
+radial-gradient(circle at top right,#1a0b2e 0%,#07020d 100%);
+
+transition:background 0.6s ease;
+
+}
+
+/* ==================================================
+TIPOGRAFÍA
+================================================== */
+
+.serif{
+font-family:'Playfair Display',serif;
+}
+
+/* ==================================================
+FONDO DE PARTÍCULAS
+================================================== */
+
+#bg-canvas{
+
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+width:100%;
+height:100%;
+
+}
+
+/* ==================================================
+MENU NEBULOSA
+================================================== */
+
+#nav-nebula{
+
+position:fixed;
+top:25px;
+left:50%;
+
+transform:translateX(-50%);
+
+z-index:10000;
+
+width:90%;
+max-width:620px;
+
+}
+
+.nav-blur{
+
+background:rgba(15,5,25,0.6);
+backdrop-filter:blur(25px);
+
+border:1px solid var(--border);
+
+border-radius:100px;
+
+padding:10px 20px;
+
+display:flex;
+
+justify-content:space-around;
+align-items:center;
+
+box-shadow:0 20px 50px rgba(0,0,0,0.8);
+
+}
+
+.nav-btn{
+
+color:rgba(255,255,255,0.5);
+
+font-size:1.2rem;
+
+transition:all var(--transition);
+
+padding:10px;
+
+border-radius:50%;
+
+cursor:pointer;
+
+}
+
+.nav-btn.active{
+
+color:var(--secondary);
+
+background:rgba(255,255,255,0.08);
+
+transform:scale(1.2);
+
+text-shadow:0 0 10px var(--secondary);
+
+}
+
+/* ==================================================
+TARJETAS
+================================================== */
+
+.module-card{
+
+background:var(--bg-glass);
+
+backdrop-filter:blur(15px);
+
+border:1px solid var(--border);
+
+border-radius:40px;
+
+padding:35px;
+
+margin-bottom:50px;
+
+transition:all var(--transition);
+
+}
+
+.module-card:hover{
+
+border-color:var(--primary);
+
+}
+
+/* ==================================================
+BOTÓN PRINCIPAL
+================================================== */
+
+.btn-main{
+
+background:linear-gradient(135deg,var(--primary),var(--accent));
+
+padding:15px 35px;
+
+border-radius:50px;
+
+font-weight:600;
+
+text-transform:uppercase;
+
+letter-spacing:2px;
+
+font-size:11px;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
+
+transition:all var(--transition);
+
+cursor:pointer;
+
+}
+
+.btn-main:hover{
+
+transform:translateY(-2px);
+
+}
+
+.btn-main:active{
+
+transform:scale(0.95);
+
+}
+
+/* ==================================================
+MINI MUSIC PLAYER
+================================================== */
+
+#music-player{
+
+position:fixed;
+
+bottom:20px;
+left:20px;
+
+background:rgba(0,0,0,0.6);
+
+backdrop-filter:blur(10px);
+
+padding:10px 15px;
+
+border-radius:20px;
+
+font-size:12px;
+
+color:white;
+
+width:180px;
+
+z-index:9999;
+
+}
+
+#track-title{
+
+text-align:center;
+margin-bottom:6px;
+
+font-weight:600;
+font-size:11px;
+
+opacity:0.85;
+
+}
+
+.player-controls{
+
+display:flex;
+justify-content:space-around;
+align-items:center;
+
+}
+
+.player-controls button{
+
+background:none;
+border:none;
+
+color:white;
+
+font-size:16px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+.player-controls button:hover{
+
+transform:scale(1.2);
+
+}
+
+/* ==================================================
+OSCILOSCOPIO
+================================================== */
+
+#freq-container{
+
+width:100%;
+max-width:420px;
+margin:auto;
+
+}
+
+#osc-canvas{
+
+width:100%;
+height:150px;
+
+background:rgba(0,0,0,0.4);
+border-radius:12px;
+
+}
+
+/* ==================================================
+P5 ARTE CANVAS
+================================================== */
+
+#canvas-holder{
+
+width:100%;
+height:400px;
+
+background:rgba(0,0,0,0.4);
+border-radius:20px;
+
+overflow:hidden;
+
+}
+
+/* ==================================================
+ANIMACIONES
+================================================== */
+
+.fade-in{
+
+opacity:0;
+transform:translateY(30px);
+
+}
+
+/* ==================================================
+SCROLLBAR
+================================================== */
+
+::-webkit-scrollbar{
+
+width:6px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:var(--primary);
+border-radius:10px;
+
+}
+
+</style>
 <body>
 
-    <div id="bg-canvas"></div>
+<div id="bg-canvas"></div>
 
-    <nav id="nav-nebula">
-        <div class="nav-blur">
-            <button onclick="scrollToSec('intro')" class="nav-btn active" id="btn-intro"><i class="fas fa-feather"></i></button>
-            <button onclick="scrollToSec('sonido')" class="nav-btn" id="btn-sonido"><i class="fas fa-wave-square"></i></button>
-            <button onclick="scrollToSec('arte')" class="nav-btn" id="btn-arte"><i class="fas fa-paint-brush"></i></button>
-            <button onclick="scrollToSec('ritmo')" class="nav-btn" id="btn-ritmo"><i class="fas fa-heartbeat"></i></button>
-            <button onclick="scrollToSec('destino')" class="nav-btn" id="btn-destino"><i class="fas fa-star"></i></button>
-        </div>
-    </nav>
 
-    <div id="amari-pip">
-        <div class="amari-window">
-            <img src="imagen/Recepcion.png" id="amari-avatar" alt="Amari">
-            <div class="amari-msg" id="amari-speech">¿Qué intención traes hoy?</div>
-            <div class="flex justify-center gap-2 mt-2">
-                <button onclick="amariMood('Pensando.png', 'Analizando energía...')" class="text-[10px] text-cyan-400"><i class="fas fa-sync"></i></button>
-                <button onclick="amariMood('Casual.png', '¡Me encanta!')" class="text-[10px] text-pink-400"><i class="fas fa-heart"></i></button>
-            </div>
-        </div>
+<!-- ===============================
+REPRODUCTOR MUSICAL GLOBAL
+================================ -->
+
+<div id="music-player">
+
+    <div id="track-title">
+        Experiencia Sonora
     </div>
 
-    <main class="container mx-auto px-6 pt-32 pb-20 max-w-5xl">
+    <div class="player-controls">
 
-        <section id="intro" class="min-h-screen flex flex-col justify-center text-center">
-            <div class="module-card bg-transparent border-none">
-                <h4 class="text-s-cyan tracking-[0.7em] uppercase text-[10px] mb-6 font-bold">Bienvenida a tu origen</h4>
-                <h1 class="serif text-6xl md:text-8xl mb-8 leading-tight">Ecos de <br><span class="italic text-p-purple">Raíz</span></h1>
-                <p class="max-w-xl mx-auto opacity-60 font-light leading-relaxed mb-10">
-                    Un viaje interactivo diseñado para sincronizar tus frecuencias vitales a través del arte digital y la musicoterapia.
-                </p>
-                <button onclick="scrollToSec('sonido')" class="btn-main">Iniciar Ritual</button>
-            </div>
-        </section>
+        <button onclick="prevTrack()">
+            <i class="fas fa-backward"></i>
+        </button>
 
-        <section id="sonido" class="min-h-screen">
-            <div class="module-card">
-                <h2 class="serif text-4xl mb-10"><i class="fas fa-adjust mr-4 text-p-purple"></i>Alquimia Sonora</h2>
-                <div class="grid md:grid-cols-2 gap-10">
-                    <div class="space-y-4">
-                        <button onclick="playFreq(174, 'Seguridad y Base')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-red-500">
-                            <span class="text-2xl opacity-30 italic font-bold">174Hz</span>
-                            <div class="text-left">
-                                <h5 class="text-sm font-bold uppercase">Anestesia Natural</h5>
-                                <p class="text-[10px] opacity-50">Alivia el dolor físico y emocional</p>
-                            </div>
-                        </button>
-                        <button onclick="playFreq(528, 'Reparación de ADN')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-p-purple">
-                            <span class="text-2xl opacity-30 italic font-bold">528Hz</span>
-                            <div class="text-left">
-                                <h5 class="text-sm font-bold uppercase">Frecuencia Milagro</h5>
-                                <p class="text-[10px] opacity-50">Transformación y milagros</p>
-                            </div>
-                        </button>
-                        <button onclick="playFreq(852, 'Retorno al Orden')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-s-cyan">
-                            <span class="text-2xl opacity-30 italic font-bold">852Hz</span>
-                            <div class="text-left">
-                                <h5 class="text-sm font-bold uppercase">Intuición Pura</h5>
-                                <p class="text-[10px] opacity-50">Despertar espiritual y luz</p>
-                            </div>
-                        </button>
-                    </div>
-                    <div class="flex flex-col justify-center items-center">
-                        <div id="freq-container">
-                            <canvas id="osc-canvas"></canvas>
-                        </div>
-                        <div class="mt-6 text-center">
-                            <p id="now-playing-label" class="text-[10px] uppercase tracking-widest text-s-cyan">Silencio absoluto</p>
-                            <button onclick="stopAudio()" class="mt-4 text-[10px] opacity-40 hover:opacity-100 uppercase underline">Detener frecuencia</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <button onclick="toggleMusic()" id="play-btn">
+            <i class="fas fa-play"></i>
+        </button>
 
-        <section id="arte" class="min-h-screen">
-            <div class="module-card">
-                <div class="flex justify-between items-end mb-8">
-                    <h2 class="serif text-4xl">Lienzo Vital</h2>
-                    <button onclick="document.getElementById('img-uploader').click()" class="text-xs text-s-cyan font-bold underline uppercase">Subir Foto</button>
-                    <input type="file" id="img-uploader" class="hidden" accept="image/*">
-                </div>
+        <button onclick="nextTrack()">
+            <i class="fas fa-forward"></i>
+        </button>
 
-                <div id="canvas-holder" class="w-full aspect-video rounded-[30px] overflow-hidden bg-black shadow-2xl relative">
-                    </div>
+    </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                    <div class="p-4 glass-panel text-center">
-                        <p class="text-[10px] uppercase opacity-40 mb-3">Herramienta</p>
-                        <select id="brush-type" class="bg-transparent text-xs w-full focus:outline-none">
-                            <option value="star" class="bg-black">✨ Estrellas</option>
-                            <option value="smoke" class="bg-black">🌫️ Humo</option>
-                            <option value="flow" class="bg-black">🌊 Flujo</option>
-                        </select>
-                    </div>
-                    <div class="p-4 glass-panel text-center">
-                        <p class="text-[10px] uppercase opacity-40 mb-3">Densidad</p>
-                        <input type="range" id="brush-size" class="w-full accent-p-purple" min="5" max="50" value="20">
-                    </div>
-                    <button onclick="clearArt()" class="p-4 glass-panel hover:text-red-400 transition uppercase text-[10px] font-bold">Limpiar</button>
-                    <button onclick="saveArt()" class="p-4 glass-panel hover:text-s-cyan transition uppercase text-[10px] font-bold">Descargar</button>
-                </div>
-            </div>
-        </section>
+</div>
 
-        <section id="ritmo" class="min-h-screen">
-            <div class="module-card text-center">
-                <h2 class="serif text-4xl mb-16 italic">Pulsación Primordial</h2>
-                <div class="relative inline-block mb-12">
-                    <div id="heart-core" class="w-40 h-40 bg-gradient-to-tr from-p-purple to-t-pink rounded-full flex items-center justify-center relative z-10 shadow-[0_0_50px_rgba(138,43,226,0.5)]">
-                        <i class="fas fa-heart text-5xl text-white"></i>
-                    </div>
-                    <div id="heart-pulse-1" class="absolute inset-0 bg-p-purple/30 rounded-full scale-100"></div>
-                </div>
-                <div>
-                    <span id="bpm-display" class="text-7xl font-bold tracking-tighter">72</span>
-                    <p class="text-[10px] uppercase tracking-[0.3em] opacity-50">Latidos por Minuto (BPM)</p>
-                </div>
-                <div class="flex justify-center gap-4 mt-10">
-                    <button onclick="adjustBPM(-5)" class="p-4 glass-panel rounded-full w-12 h-12 flex items-center justify-center">-</button>
-                    <button onclick="adjustBPM(5)" class="p-4 glass-panel rounded-full w-12 h-12 flex items-center justify-center">+</button>
-                </div>
-            </div>
-        </section>
+<!-- MOTOR DE AUDIO GLOBAL -->
+<audio id="bg-music" loop></audio>
 
-        <section id="destino" class="min-h-screen">
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="module-card text-center flex flex-col justify-center bg-gradient-to-b from-transparent to-p-purple/10">
-                    <h2 class="serif text-3xl mb-10 italic">Destino Manifestado</h2>
-                    <p id="oracle-text" class="text-xl serif italic mb-10 leading-relaxed">
-                        "El silencio no es ausencia, es la presencia de tu propia voz interna."
-                    </p>
-                    <button onclick="getOracle()" class="btn-main self-center">Obtener Mensaje</button>
-                </div>
 
-                <div class="module-card">
-                    <h3 class="text-sm uppercase tracking-widest font-bold mb-6 text-s-cyan">Historial de Alquimia</h3>
-                    <div id="alchemy-log">
-                        </div>
-                    <button onclick="clearLog()" class="mt-6 text-[9px] opacity-30 hover:opacity-100 uppercase">Borrar Bitácora</button>
-                </div>
-            </div>
-        </section>
 
-    </main>
+<!-- ===============================
+NAVEGACIÓN NEBULOSA
+================================ -->
 
-    <script>
-        /* ==========================================
-           1. AUDIO ENGINE (Binaural & Solfeggio)
-        ========================================== */
-        let audioCtx, mainGain, currentOsc;
+<nav id="nav-nebula">
 
-        function initAudio() {
-            if(!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                mainGain = audioCtx.createGain();
-                mainGain.connect(audioCtx.destination);
-            }
+    <div class="nav-blur">
+
+        <button onclick="scrollToSec('intro')" class="nav-btn active" id="btn-intro">
+            <i class="fas fa-feather"></i>
+        </button>
+
+        <button onclick="scrollToSec('sonido')" class="nav-btn" id="btn-sonido">
+            <i class="fas fa-wave-square"></i>
+        </button>
+
+        <button onclick="scrollToSec('arte')" class="nav-btn" id="btn-arte">
+            <i class="fas fa-paint-brush"></i>
+        </button>
+
+        <button onclick="scrollToSec('ritmo')" class="nav-btn" id="btn-ritmo">
+            <i class="fas fa-heartbeat"></i>
+        </button>
+
+        <button onclick="scrollToSec('destino')" class="nav-btn" id="btn-destino">
+            <i class="fas fa-star"></i>
+        </button>
+
+    </div>
+
+</nav>
+<!-- ===============================
+AMARI ASISTENTE
+================================ -->
+
+<div id="amari-pip">
+
+    <div class="amari-window">
+
+        <img src="imagen/Recepcion.png" id="amari-avatar" alt="Amari">
+
+        <div class="amari-msg" id="amari-speech">
+            ¿Qué intención traes hoy?
+        </div>
+
+        <div class="flex justify-center gap-2 mt-2">
+
+            <button onclick="amariMood('Pensando.png','Analizando energía...')" class="text-[10px] text-cyan-400">
+                <i class="fas fa-sync"></i>
+            </button>
+
+            <button onclick="amariMood('Casual.png','¡Me encanta!')" class="text-[10px] text-pink-400">
+                <i class="fas fa-heart"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ===============================
+CONTENIDO PRINCIPAL
+================================ -->
+
+<main class="container mx-auto px-6 pt-32 pb-20 max-w-5xl">
+
+
+<!-- ===============================
+INTRO
+================================ -->
+
+<section id="intro" class="min-h-screen flex flex-col justify-center text-center">
+
+<div class="module-card bg-transparent border-none">
+
+<h4 class="text-s-cyan tracking-[0.7em] uppercase text-[10px] mb-6 font-bold">
+Bienvenida a tu origen
+</h4>
+
+<h1 class="serif text-6xl md:text-8xl mb-8 leading-tight">
+Ecos de <br><span class="italic text-p-purple">Raíz</span>
+</h1>
+
+<p class="max-w-xl mx-auto opacity-60 font-light leading-relaxed mb-10">
+
+Un viaje interactivo diseñado para sincronizar tus frecuencias vitales
+a través del arte digital y la musicoterapia.
+
+</p>
+
+<button onclick="scrollToSec('sonido')" class="btn-main">
+Iniciar Ritual
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- ===============================
+ALQUIMIA SONORA
+================================ -->
+
+<section id="sonido" class="min-h-screen">
+
+<div class="module-card">
+
+<h2 class="serif text-4xl mb-10">
+<i class="fas fa-adjust mr-4 text-p-purple"></i>
+Alquimia Sonora
+</h2>
+
+<div class="grid md:grid-cols-2 gap-10">
+
+
+<!-- FRECUENCIAS -->
+
+<div class="space-y-4">
+
+<button onclick="playFreq(174,'Seguridad y Base')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-red-500">
+
+<span class="text-2xl opacity-30 italic font-bold">174Hz</span>
+
+<div class="text-left">
+
+<h5 class="text-sm font-bold uppercase">
+Anestesia Natural
+</h5>
+
+<p class="text-[10px] opacity-50">
+Alivia el dolor físico y emocional
+</p>
+
+</div>
+
+</button>
+
+
+
+<button onclick="playFreq(528,'Reparación de ADN')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-p-purple">
+
+<span class="text-2xl opacity-30 italic font-bold">528Hz</span>
+
+<div class="text-left">
+
+<h5 class="text-sm font-bold uppercase">
+Frecuencia Milagro
+</h5>
+
+<p class="text-[10px] opacity-50">
+Transformación y milagros
+</p>
+
+</div>
+
+</button>
+<button onclick="playFreq(852,'Retorno al Orden')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-s-cyan">
+
+<span class="text-2xl opacity-30 italic font-bold">
+852Hz
+</span>
+
+<div class="text-left">
+
+<h5 class="text-sm font-bold uppercase">
+Intuición Pura
+</h5>
+
+<p class="text-[10px] opacity-50">
+Despertar espiritual y luz
+</p>
+
+</div>
+
+</button>
+
+</div>
+
+<!-- OSCILOSCOPIO -->
+
+<div class="flex flex-col justify-center items-center">
+
+<div id="freq-container">
+
+<canvas id="osc-canvas"></canvas>
+
+</div>
+
+<div class="mt-6 text-center">
+
+<p id="now-playing-label" class="text-[10px] uppercase tracking-widest text-s-cyan">
+
+Silencio absoluto
+
+</p>
+
+<button onclick="stopAudio()" class="mt-4 text-[10px] opacity-40 hover:opacity-100 uppercase underline">
+
+Detener frecuencia
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+<!-- ===============================
+ARTE INTERACTIVO
+================================ -->
+
+<section id="arte" class="min-h-screen">
+
+<div class="module-card">
+
+<h2 class="serif text-4xl mb-10">
+<i class="fas fa-paint-brush mr-4 text-p-purple"></i>
+Arte de Energía
+</h2>
+
+<div id="canvas-holder"></div>
+
+</div>
+
+</section>
+
+<!-- ===============================
+RITMO CARDIACO
+================================ -->
+
+<section id="ritmo" class="min-h-screen">
+
+<div class="module-card text-center">
+
+<h2 class="serif text-4xl mb-10">
+<i class="fas fa-heartbeat mr-4 text-p-purple"></i>
+Ritmo Vital
+</h2>
+
+<div class="flex justify-center items-center gap-6">
+
+<button onclick="adjustBPM(-5)" class="btn-main">-</button>
+
+<div id="bpm-display" class="text-3xl serif">72</div>
+
+<button onclick="adjustBPM(5)" class="btn-main">+</button>
+
+</div>
+
+<div class="mt-10 flex justify-center">
+
+<div id="heart-pulse-1" class="w-24 h-24 rounded-full bg-pink-500 opacity-40"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ===============================
+ORÁCULO
+================================ -->
+
+<section id="destino" class="min-h-screen">
+
+<div class="module-card text-center">
+
+<h2 class="serif text-4xl mb-10">
+<i class="fas fa-star mr-4 text-p-purple"></i>
+Oráculo Interior
+</h2>
+
+<p id="oracle-text" class="opacity-70 mb-10">
+Pulsa para recibir un mensaje
+</p>
+
+<button onclick="getOracle()" class="btn-main">
+Revelar mensaje
+</button>
+
+<div id="alchemy-log" class="mt-10 text-left space-y-4"></div>
+
+</div>
+
+</section>
+</main>
+<script>
+
+/* ======================================================
+   1. AUDIO ENGINE (SOLFEGGIO + PLAYER BASE)
+====================================================== */
+
+let audioCtx;
+let mainGain;
+let currentOsc;
+
+function initAudio(){
+
+    if(!audioCtx){
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        mainGain = audioCtx.createGain();
+        mainGain.gain.value = 0.6;
+
+        mainGain.connect(audioCtx.destination);
+
+    }
+
+}
+
+/* ======================================================
+   2. FRECUENCIAS SOLFEGGIO
+====================================================== */
+
+function playFreq(freq,label){
+
+    initAudio();
+
+    if(currentOsc){
+        currentOsc.stop();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.value = freq;
+
+    gain.gain.setValueAtTime(0,audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.2,audioCtx.currentTime+1);
+
+    osc.connect(gain);
+    gain.connect(mainGain);
+
+    osc.start();
+
+    currentOsc = osc;
+
+    const labelEl = document.getElementById("now-playing-label");
+    if(labelEl){
+        labelEl.innerText = "Resonando: " + freq + "Hz | " + label;
+    }
+
+    amariMood("Pensando.png","Sintonizando frecuencia "+freq+"Hz");
+
+}
+
+function stopAudio(){
+
+    if(currentOsc){
+        currentOsc.stop();
+        currentOsc = null;
+    }
+
+    const labelEl = document.getElementById("now-playing-label");
+
+    if(labelEl){
+        labelEl.innerText = "Silencio absoluto";
+    }
+
+}
+
+
+/* ======================================================
+   3. MINI MUSIC PLAYER
+====================================================== */
+
+const playlist = [
+
+{
+title:"Raíz Interior",
+src:"audio/raiz.mp3"
+},
+
+{
+title:"Fuerza Interior",
+src:"audio/fuerza.mp3"
+},
+
+{
+title:"Equilibrio Universal",
+src:"audio/equilibrio.mp3"
+}
+
+];
+
+let currentTrack = 0;
+
+const audio = document.getElementById("bg-music");
+const title = document.getElementById("track-title");
+const playBtn = document.getElementById("play-btn");
+
+function loadTrack(index){
+
+    const track = playlist[index];
+
+    audio.src = track.src;
+
+    if(title){
+        title.innerText = track.title;
+    }
+
+}
+
+function toggleMusic(){
+
+    initAudio();
+
+    if(audio.paused){
+
+        audio.play();
+
+        if(playBtn){
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
         }
 
-        function playFreq(f, label) {
-            initAudio();
-            if(currentOsc) { currentOsc.stop(); }
+    }else{
 
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-            
-            g.gain.setValueAtTime(0, audioCtx.currentTime);
-            g.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 1.5);
-            
-            osc.connect(g);
-            g.connect(mainGain);
-            osc.start();
-            
-            currentOsc = osc;
-            document.getElementById('now-playing-label').innerText = `Resonando: ${f}Hz | ${label}`;
-            amariMood('Pensando.png', `Sintonizando frecuencia ${f}Hz...`);
+        audio.pause();
+
+        if(playBtn){
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
         }
 
-        function stopAudio() {
-            if(currentOsc) {
-                currentOsc.stop();
-                currentOsc = null;
-                document.getElementById('now-playing-label').innerText = "Silencio absoluto";
-            }
+    }
+
+}
+
+function nextTrack(){
+
+    currentTrack++;
+
+    if(currentTrack >= playlist.length){
+        currentTrack = 0;
+    }
+
+    loadTrack(currentTrack);
+    audio.play();
+
+}
+
+function prevTrack(){
+
+    currentTrack--;
+
+    if(currentTrack < 0){
+        currentTrack = playlist.length-1;
+    }
+
+    loadTrack(currentTrack);
+    audio.play();
+
+}
+
+loadTrack(0);
+
+
+/* ======================================================
+   4. OSCILOSCOPIO
+====================================================== */
+
+const canvasOsc = document.getElementById("osc-canvas");
+
+if(canvasOsc){
+
+const ctxOsc = canvasOsc.getContext("2d");
+
+function resizeOsc(){
+
+    canvasOsc.width = canvasOsc.offsetWidth;
+    canvasOsc.height = 150;
+
+}
+
+resizeOsc();
+window.addEventListener("resize",resizeOsc);
+
+function animateOsc(){
+
+    ctxOsc.clearRect(0,0,canvasOsc.width,canvasOsc.height);
+
+    ctxOsc.beginPath();
+
+    ctxOsc.strokeStyle = "#00FFFF";
+    ctxOsc.lineWidth = 2;
+
+    const amplitude = currentOsc ? 40 : 2;
+    const frequency = currentOsc ? 0.05 : 0.01;
+
+    for(let x=0;x<canvasOsc.width;x++){
+
+        const y =
+        canvasOsc.height/2 +
+        Math.sin(x*frequency + Date.now()*0.005)*amplitude;
+
+        if(x===0){
+            ctxOsc.moveTo(x,y);
+        }else{
+            ctxOsc.lineTo(x,y);
         }
 
-        /* ==========================================
-           2. OSCILOSCOPIO VISUAL
-        ========================================== */
-        const canvasOsc = document.getElementById('osc-canvas');
-        const ctxOsc = canvasOsc.getContext('2d');
-        canvasOsc.width = 400; canvasOsc.height = 150;
+    }
 
-        function animateOsc() {
-            ctxOsc.clearRect(0, 0, canvasOsc.width, canvasOsc.height);
-            ctxOsc.beginPath();
-            ctxOsc.strokeStyle = '#00FFFF';
-            ctxOsc.lineWidth = 2;
-            
-            const amplitude = currentOsc ? 40 : 2;
-            const frequency = currentOsc ? 0.05 : 0.01;
-            
-            for(let x=0; x<canvasOsc.width; x++) {
-                const y = 75 + Math.sin(x * frequency + Date.now()*0.005) * amplitude;
-                if(x===0) ctxOsc.moveTo(x,y);
-                else ctxOsc.lineTo(x,y);
-            }
-            ctxOsc.stroke();
-            requestAnimationFrame(animateOsc);
-        }
-        animateOsc();
+    ctxOsc.stroke();
 
-        /* ==========================================
-           3. SISTEMA DE ARTE P5.JS (AVANZADO)
-        ========================================== */
-        new p5((p) => {
-            let img;
-            p.setup = () => {
-                let cnv = p.createCanvas(p.select('#canvas-holder').width, p.select('#canvas-holder').height);
-                cnv.parent('canvas-holder');
-                p.background(5);
-            };
+    requestAnimationFrame(animateOsc);
 
-            p.draw = () => {
-                if(img) {
-                    p.tint(255, 2);
-                    p.image(img, 0, 0, p.width, p.height);
-                }
-            };
+}
 
-            p.touchMoved = p.mouseDragged = () => {
-                if(p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
-                
-                let type = document.getElementById('brush-type').value;
-                let size = document.getElementById('brush-size').value;
-                
-                p.noStroke();
-                if(type === 'star') {
-                    p.fill(255, 255, 255, 150);
-                    p.ellipse(p.mouseX, p.mouseY, 2);
-                    p.fill(0, 255, 255, 50);
-                    p.ellipse(p.mouseX, p.mouseY, size);
-                } else if(type === 'smoke') {
-                    p.fill(138, 43, 226, 10);
-                    p.ellipse(p.mouseX + p.random(-10,10), p.mouseY + p.random(-10,10), size*2);
-                } else if(type === 'flow') {
-                    p.fill(0, 255, 255, 80);
-                    p.rect(p.mouseX, p.mouseY, size, 2);
-                }
-                return false;
-            };
+animateOsc();
 
-            window.clearArt = () => { p.background(5); img = null; amariMood('Casual.png', 'Lienzo purificado'); };
-            window.saveArt = () => p.saveCanvas('mi_raiz', 'png');
-            
-            document.getElementById('img-uploader').onchange = (e) => {
-                const reader = new FileReader();
-                reader.onload = (ev) => img = p.loadImage(ev.target.result);
-                reader.readAsDataURL(e.target.files[0]);
-                amariMood('Casual.png', '¡Esa imagen vibra alto!');
-            };
-        });
+}
 
-        /* ==========================================
-           4. RITMO CARDIACO
-        ========================================= */
-        let bpm = 72;
-        function adjustBPM(v) {
-            bpm += v;
-            bpm = p5.prototype.constrain(bpm, 40, 180);
-            document.getElementById('bpm-display').innerText = bpm;
-            updateHeart();
-        }
 
-        function updateHeart() {
-            gsap.killTweensOf("#heart-pulse-1");
-            const duration = 60 / bpm;
-            gsap.fromTo("#heart-pulse-1", 
-                { scale: 1, opacity: 0.5 }, 
-                { scale: 1.8, opacity: 0, duration: duration, repeat: -1, ease: "sine.out" }
-            );
-        }
-        updateHeart();
+/* ======================================================
+   5. ARTE INTERACTIVO (p5.js)
+====================================================== */
 
-        /* ==========================================
-           5. ORÁCULO E HISTORIAL
-        ========================================== */
-        const oracles = [
-            "Tu presencia es el regalo más grande que puedes ofrecer al mundo.",
-            "Lo que buscas afuera, ya está floreciendo en tu interior.",
-            "Suelta la necesidad de entender, abraza la necesidad de sentir.",
-            "Eres un puente entre la tierra y el cosmos. Mantente firme.",
-            "Hoy, tu única tarea es ser amable con tu propio proceso."
-        ];
+const holder = document.getElementById("canvas-holder");
 
-        function getOracle() {
-            const msg = oracles[Math.floor(Math.random() * oracles.length)];
-            document.getElementById('oracle-text').innerText = `"${msg}"`;
-            
-            // Guardar en historial
-            const log = document.getElementById('alchemy-log');
-            const entry = document.createElement('div');
-            entry.innerHTML = `<small class="opacity-40">${new Date().toLocaleTimeString()}</small><br>${msg}`;
-            log.prepend(entry);
-            
-            amariMood('Casual.png', 'Un mensaje del universo para ti.');
-        }
+if(holder){
 
-        function clearLog() {
-            document.getElementById('alchemy-log').innerHTML = '';
-        }
+new p5((p)=>{
 
-        /* ==========================================
-           6. NAVEGACIÓN Y AMARI
-        ========================================== */
-        function scrollToSec(id) {
-            gsap.to(window, { duration: 1.2, scrollTo: "#" + id, ease: "power3.inOut" });
-            
-            // Update Active Nav
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + (id==='intro'?'intro':id)).classList.add('active');
-        }
+let img;
 
-        function amariMood(img, text) {
-            const avatar = document.getElementById('amari-avatar');
-            const speech = document.getElementById('amari-speech');
-            gsap.to([avatar, speech], { opacity: 0, scale: 0.8, duration: 0.2, onComplete: () => {
-                avatar.src = "imagen/" + img;
-                speech.innerText = text;
-                gsap.to([avatar, speech], { opacity: 1, scale: 1, duration: 0.4, ease: "back.out" });
-            }});
-        }
+p.setup = ()=>{
 
-        /* ==========================================
-           7. FONDO DE PARTÍCULAS
-        ========================================== */
-        new p5((p) => {
-            let pts = [];
-            p.setup = () => {
-                p.createCanvas(p.windowWidth, p.windowHeight).parent('bg-canvas');
-                for(let i=0; i<50; i++) pts.push({x: p.random(p.width), y: p.random(p.height), v: p.random(0.2, 0.5)});
-            };
-            p.draw = () => {
-                p.clear();
-                p.fill(138, 43, 226, 30);
-                p.noStroke();
-                pts.forEach(pt => {
-                    p.ellipse(pt.x, pt.y, 2);
-                    pt.y -= pt.v;
-                    if(pt.y < 0) pt.y = p.height;
-                });
-            };
-        });
-    </script>
+const cnv = p.createCanvas(holder.offsetWidth,400);
+cnv.parent("canvas-holder");
+
+p.background(5);
+
+};
+
+p.draw = ()=>{
+
+if(img){
+
+p.tint(255,5);
+p.image(img,0,0,p.width,p.height);
+
+}
+
+};
+
+p.mouseDragged = ()=>{
+
+p.noStroke();
+
+p.fill(0,255,255,40);
+p.ellipse(p.mouseX,p.mouseY,20);
+
+};
+
+window.clearArt = ()=>{
+
+p.background(5);
+img=null;
+
+};
+
+window.saveArt = ()=>{
+
+p.saveCanvas("mi_raiz","png");
+
+};
+
+});
+
+}
+
+
+/* ======================================================
+   6. RITMO CARDIACO
+====================================================== */
+
+let bpm = 72;
+
+function adjustBPM(v){
+
+bpm += v;
+
+if(bpm < 40) bpm = 40;
+if(bpm > 180) bpm = 180;
+
+const display = document.getElementById("bpm-display");
+
+if(display){
+display.innerText = bpm;
+}
+
+updateHeart();
+
+}
+
+function updateHeart(){
+
+if(!document.getElementById("heart-pulse-1")) return;
+
+gsap.killTweensOf("#heart-pulse-1");
+
+const duration = 60/bpm;
+
+gsap.fromTo(
+
+"#heart-pulse-1",
+
+{scale:1,opacity:0.5},
+
+{
+scale:1.8,
+opacity:0,
+duration:duration,
+repeat:-1,
+ease:"sine.out"
+}
+
+);
+
+}
+
+updateHeart();
+
+
+/* ======================================================
+   7. ORÁCULO
+====================================================== */
+
+const oracles = [
+
+"Tu presencia es un regalo para este mundo.",
+
+"Lo que buscas afuera vive dentro de ti.",
+
+"Confía en el proceso que estás atravesando.",
+
+"Eres parte del ritmo del universo.",
+
+"La calma revela la verdad."
+
+];
+
+function getOracle(){
+
+const msg =
+oracles[Math.floor(Math.random()*oracles.length)];
+
+const oracle = document.getElementById("oracle-text");
+
+if(oracle){
+oracle.innerText = '"' + msg + '"';
+}
+
+const log = document.getElementById("alchemy-log");
+
+if(log){
+
+const entry = document.createElement("div");
+
+entry.innerHTML =
+"<small>"+new Date().toLocaleTimeString()+"</small><br>"+msg;
+
+log.prepend(entry);
+
+}
+
+amariMood("Casual.png","Mensaje recibido.");
+
+}
+
+
+/* ======================================================
+   8. NAVEGACIÓN SUAVE
+====================================================== */
+
+function scrollToSec(id){
+
+gsap.to(window,{
+
+duration:1.2,
+scrollTo:"#"+id,
+ease:"power3.inOut"
+
+});
+
+document
+.querySelectorAll(".nav-btn")
+.forEach(btn=>btn.classList.remove("active"));
+
+const activeBtn = document.getElementById("btn-"+id);
+
+if(activeBtn){
+activeBtn.classList.add("active");
+}
+
+}
+
+
+/* ======================================================
+   9. AMARI
+====================================================== */
+
+function amariMood(img,text){
+
+const avatar = document.getElementById("amari-avatar");
+const speech = document.getElementById("amari-speech");
+
+if(!avatar || !speech) return;
+
+gsap.to([avatar,speech],{
+
+opacity:0,
+scale:0.8,
+duration:0.2,
+
+onComplete:()=>{
+
+avatar.src="imagen/"+img;
+speech.innerText=text;
+
+gsap.to([avatar,speech],{
+
+opacity:1,
+scale:1,
+duration:0.4,
+ease:"back.out"
+
+});
+
+}
+
+});
+
+}
+
+
+/* ======================================================
+   10. FONDO PARTÍCULAS
+====================================================== */
+
+new p5((p)=>{
+
+let pts=[];
+
+p.setup=()=>{
+
+p.createCanvas(p.windowWidth,p.windowHeight).parent("bg-canvas");
+
+for(let i=0;i<60;i++){
+
+pts.push({
+
+x:p.random(p.width),
+y:p.random(p.height),
+v:p.random(0.2,0.6)
+
+});
+
+}
+
+};
+
+p.draw=()=>{
+
+p.clear();
+
+p.fill(138,43,226,30);
+p.noStroke();
+
+pts.forEach(pt=>{
+
+p.ellipse(pt.x,pt.y,2);
+
+pt.y -= pt.v;
+
+if(pt.y < 0){
+pt.y = p.height;
+}
+
+});
+
+};
+
+});
+
+</script>
+
 </body>
 </html>
