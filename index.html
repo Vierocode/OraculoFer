@@ -163,7 +163,7 @@ body {
     transition: 0.2s;
 }
 
-/* AMARI ASISTENTE - VERSIÓN FLOTANTE MÓVIL */
+/* AMARI ASISTENTE - VERSIÓN FLOTANTE MÓVIL CON IMÁGENES LOCALES */
 #amari-pip {
     position: fixed;
     bottom: 20px;
@@ -191,6 +191,7 @@ body {
     margin: 0 auto 10px;
     display: block;
     object-fit: cover;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
 }
 
 .amari-msg {
@@ -201,6 +202,10 @@ body {
     text-align: center;
     margin: 10px 0;
     border: 1px solid var(--border);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .amari-controls {
@@ -218,6 +223,22 @@ body {
     border-radius: 50%;
     cursor: pointer;
     transition: 0.2s;
+}
+
+.amari-controls button:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+/* Indicador de pensamiento de Amari */
+.amari-thinking {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 /* MODAL DE REGISTRO */
@@ -497,15 +518,15 @@ body {
     </div>
 </nav>
 
-<!-- AMARI ASISTENTE FLOTANTE -->
+<!-- AMARI ASISTENTE FLOTANTE CON IMÁGENES LOCALES -->
 <div id="amari-pip">
     <div class="amari-window" id="amari-window">
-        <img src="https://via.placeholder.com/60/8A2BE2/ffffff?text=Amari" id="amari-avatar" alt="Amari">
+        <img src="imagen/Recepcion.png" id="amari-avatar" alt="Amari" onerror="this.src='https://via.placeholder.com/60/8A2BE2/ffffff?text=Amari'">
         <div class="amari-msg" id="amari-speech">¿Qué intención traes hoy?</div>
         <div class="amari-controls">
-            <button onclick="amariMood('Pensando','Analizando energía...')"><i class="fas fa-sync"></i></button>
-            <button onclick="amariMood('Casual','¡Me encanta!')"><i class="fas fa-heart"></i></button>
-            <button onclick="amariMood('Sabia','Observando tu luz...')"><i class="fas fa-crown"></i></button>
+            <button onclick="amariInteract('Pensando.png', 'Analizando energía...')" title="Pensar"><i class="fas fa-sync"></i></button>
+            <button onclick="amariInteract('Casual.png', '¡Me encanta!')" title="Casual"><i class="fas fa-heart"></i></button>
+            <button onclick="amariInteract('Caminando1.png', 'Acompañándote en el viaje...')" title="Caminar"><i class="fas fa-walking"></i></button>
         </div>
     </div>
 </div>
@@ -691,7 +712,8 @@ let userData = {
     faceQualities: [],
     archetypes: [],
     oracleMessages: [],
-    bpmHistory: []
+    bpmHistory: [],
+    interactions: [] // Historial de interacciones con Amari
 };
 
 let audioCtx;
@@ -702,6 +724,7 @@ let currentTrack = 0;
 let faceDetectionActive = false;
 let archetypeAnswers = {};
 let currentQuestion = 0;
+let amariThinking = false;
 
 // Playlist
 const playlist = [
@@ -709,6 +732,52 @@ const playlist = [
     { title: "Fuerza Interior", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
     { title: "Equilibrio Universal", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
 ];
+
+// Base de conocimiento de Amari para respuestas inteligentes
+const amariKnowledge = {
+    saludos: [
+        "¡Qué alegría verte!",
+        "Bienvenida de vuelta",
+        "Estaba esperando tu llegada",
+        "Tu energía ilumina el espacio"
+    ],
+    despedidas: [
+        "Hasta pronto, cuida tu luz",
+        "Que tengas un día lleno de magia",
+        "Vuelve cuando necesites orientación",
+        "Siempre estaré aquí para ti"
+    ],
+    animo: [
+        "Tú puedes con todo",
+        "Eres más fuerte de lo que crees",
+        "Confía en tu proceso",
+        "Cada paso te acerca a tu esencia"
+    ],
+    reflexiones: [
+        "A veces el silencio tiene las mejores respuestas",
+        "Escucha a tu corazón, siempre sabe el camino",
+        "La paz comienza en tu interior",
+        "Eres exactamente quien necesitas ser"
+    ],
+    arte: [
+        "Qué bonita expresión creativa",
+        "Tu arte refleja tu alma",
+        "Sigue explorando tu creatividad",
+        "Los colores que eliges dicen mucho de ti"
+    ],
+    musica: [
+        "La música es el lenguaje del alma",
+        "Deja que las frecuencias te sanen",
+        "Cada nota vibra con tu energía",
+        "Siente cómo la música te transforma"
+    ],
+    rostro: [
+        "Tu rostro es único en el universo",
+        "Qué bonita luz emana de ti",
+        "Tu sonrisa ilumina todo",
+        "La belleza que buscas está en tu interior"
+    ]
+};
 
 // Frases según género (basadas en terapeutas reconocidos)
 const quotesByGender = {
@@ -780,7 +849,16 @@ function completeRegistration() {
         behavior: 'smooth'
     });
     
-    amariMood('Bienvenida', `¡Hola ${userData.name}! Me alegra que estés aquí.`);
+    // Amari da la bienvenida personalizada
+    const welcomeMessages = [
+        `¡Hola ${userData.name}! Me alegra mucho que estés aquí.`,
+        `Bienvenida ${userData.name}, tu viaje interior comienza ahora.`,
+        `${userData.name}, qué emoción tenerte en este espacio sagrado.`,
+        `Estaba esperando tu llegada ${userData.name}.`
+    ];
+    const randomWelcome = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+    amariInteract('Recepcion.png', randomWelcome);
+    
     initFaceDetection();
     startArchetypeTest();
     loadQuotesByGender();
@@ -804,7 +882,7 @@ function loadQuotesByGender() {
 }
 
 // ==============================================
-// AMARI ASISTENTE FLOTANTE
+// AMARI ASISTENTE CON IA Y EXPRESIONES
 // ==============================================
 let isDragging = false;
 let offsetX, offsetY;
@@ -829,17 +907,32 @@ document.addEventListener('mouseup', () => {
     isDragging = false;
 });
 
-function amariMood(mood, message) {
+// Función principal de interacción con Amari
+function amariInteract(imageFile, message, context = 'general') {
     const avatar = document.getElementById('amari-avatar');
     const speech = document.getElementById('amari-speech');
     
+    // Registrar interacción
+    userData.interactions.push({
+        time: new Date(),
+        image: imageFile,
+        message: message,
+        context: context
+    });
+    
+    // Animación de transición
     gsap.to([avatar, speech], {
         opacity: 0,
         scale: 0.8,
         duration: 0.2,
         onComplete: () => {
-            avatar.src = `https://via.placeholder.com/60/8A2BE2/ffffff?text=${mood}`;
+            // Cambiar imagen y mensaje
+            avatar.src = `imagen/${imageFile}`;
+            avatar.onerror = () => {
+                avatar.src = 'https://via.placeholder.com/60/8A2BE2/ffffff?text=Amari';
+            };
             speech.innerText = message;
+            
             gsap.to([avatar, speech], {
                 opacity: 1,
                 scale: 1,
@@ -849,6 +942,92 @@ function amariMood(mood, message) {
         }
     });
 }
+
+// IA de Amari para respuestas contextuales
+function amariThink(context, userAction = '') {
+    if (amariThinking) return;
+    
+    amariThinking = true;
+    const avatar = document.getElementById('amari-avatar');
+    
+    // Mostrar pensamiento
+    avatar.classList.add('amari-thinking');
+    
+    // Determinar respuesta según contexto
+    setTimeout(() => {
+        let response = '';
+        let imageFile = 'Pensando.png';
+        
+        switch(context) {
+            case 'bienvenida':
+                response = amariKnowledge.saludos[Math.floor(Math.random() * amariKnowledge.saludos.length)];
+                imageFile = 'Recepcion.png';
+                break;
+                
+            case 'arte':
+                response = amariKnowledge.arte[Math.floor(Math.random() * amariKnowledge.arte.length)];
+                imageFile = 'Casual.png';
+                break;
+                
+            case 'musica':
+                response = amariKnowledge.musica[Math.floor(Math.random() * amariKnowledge.musica.length)];
+                imageFile = 'Caminando1.png';
+                break;
+                
+            case 'rostro':
+                response = amariKnowledge.rostro[Math.floor(Math.random() * amariKnowledge.rostro.length)];
+                imageFile = 'Casual.png';
+                break;
+                
+            case 'animo':
+                response = amariKnowledge.animo[Math.floor(Math.random() * amariKnowledge.animo.length)];
+                imageFile = 'Caminando1.png';
+                break;
+                
+            case 'reflexion':
+                response = amariKnowledge.reflexiones[Math.floor(Math.random() * amariKnowledge.reflexiones.length)];
+                imageFile = 'Pensando.png';
+                break;
+                
+            default:
+                response = "Estoy aquí para acompañarte en tu viaje";
+                imageFile = 'Recepcion.png';
+        }
+        
+        // Personalizar respuesta con nombre si está disponible
+        if (userData.name && response) {
+            response = response.replace('tu', userData.name);
+        }
+        
+        avatar.classList.remove('amari-thinking');
+        amariInteract(imageFile, response, context);
+        amariThinking = false;
+        
+    }, 1500); // Tiempo de pensamiento
+}
+
+// Event listeners para interacción con Amari
+document.addEventListener('DOMContentLoaded', () => {
+    // Amari reacciona al scroll
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        if (Math.abs(currentScrollY - lastScrollY) > 500) {
+            amariThink('reflexion');
+            lastScrollY = currentScrollY;
+        }
+    });
+    
+    // Amari reacciona a clicks en el arte
+    document.getElementById('canvas-holder')?.addEventListener('click', () => {
+        amariThink('arte');
+    });
+    
+    // Amari reacciona a la música
+    document.getElementById('play-btn')?.addEventListener('click', () => {
+        amariThink('musica');
+    });
+});
 
 // ==============================================
 // AUDIO ENGINE
@@ -885,7 +1064,7 @@ function playFreq(freq, label) {
     currentOsc = osc;
     
     document.getElementById("now-playing-label").innerText = `Resonando: ${freq}Hz | ${label}`;
-    amariMood('Frecuencia', `Sintonizando ${freq}Hz`);
+    amariThink('musica', `frecuencia ${freq}Hz`);
 }
 
 function stopAudio() {
@@ -913,9 +1092,11 @@ function toggleMusic() {
         audio.play();
         playBtn.innerHTML = '<i class="fas fa-pause"></i>';
         userData.bpmHistory.push({ time: new Date(), action: 'music_play' });
+        amariThink('musica');
     } else {
         audio.pause();
         playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        amariThink('reflexion');
     }
 }
 
@@ -923,12 +1104,14 @@ function nextTrack() {
     currentTrack = (currentTrack + 1) % playlist.length;
     loadTrack(currentTrack);
     audio.play();
+    amariThink('musica');
 }
 
 function prevTrack() {
     currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
     loadTrack(currentTrack);
     audio.play();
+    amariThink('musica');
 }
 
 loadTrack(0);
@@ -976,13 +1159,11 @@ if (canvasOsc) {
 let currentTool = 'brush';
 let currentColor = '#FF1493';
 let brushSize = 10;
-let artHistory = [];
 
 const holder = document.getElementById("canvas-holder");
 if (holder) {
     new p5((p) => {
         let img;
-        let drawing = false;
         let lastX, lastY;
         
         p.setup = () => {
@@ -1043,13 +1224,13 @@ if (holder) {
                 p.stroke(currentColor);
                 p.strokeWeight(2);
                 p.ellipse(p.mouseX, p.mouseY, size * 2);
+                amariThink('arte');
             } else if (currentTool === 'square') {
                 p.noFill();
                 p.stroke(currentColor);
                 p.strokeWeight(2);
                 p.rect(p.mouseX - size, p.mouseY - size, size * 2, size * 2);
-            } else if (currentTool === 'line') {
-                // Se dibuja al soltar el mouse
+                amariThink('arte');
             } else {
                 p.stroke(currentColor);
                 p.strokeWeight(size);
@@ -1068,11 +1249,12 @@ if (holder) {
         window.clearArt = () => {
             p.background(5);
             img = null;
+            amariInteract('Pensando.png', 'Un nuevo lienzo, nuevas posibilidades...');
         };
         
         window.saveArt = () => {
             p.saveCanvas("mi_obra_arte", "png");
-            amariMood('Arte', '¡Obra guardada!');
+            amariInteract('Casual.png', '¡Qué bonita obra! La has guardado.');
         };
         
         window.addArtSticker = (sticker) => {
@@ -1080,6 +1262,7 @@ if (holder) {
             p.noStroke();
             p.textSize(30);
             p.text(sticker, p.mouseX || p.width/2, p.mouseY || p.height/2);
+            amariThink('arte');
         };
     });
 }
@@ -1112,6 +1295,7 @@ async function initFaceDetection() {
         video.onplay = () => {
             faceDetectionActive = true;
             detectFaces();
+            amariThink('rostro');
         };
     } catch (error) {
         console.error('Error accessing camera:', error);
@@ -1201,7 +1385,7 @@ function captureFaceMoment() {
     const imageData = canvas.toDataURL('image/png');
     userData.faceCapture = imageData;
     
-    amariMood('Captura', '¡Momento guardado! Tu esencia queda registrada.');
+    amariInteract('Casual.png', '¡Momento guardado! Tu esencia queda registrada.');
 }
 
 // ==============================================
@@ -1215,6 +1399,10 @@ function adjustBPM(v) {
     document.getElementById("bpm-display").innerText = bpm;
     userData.bpmHistory.push({ time: new Date(), bpm: bpm });
     updateHeart();
+    
+    if (v > 0) {
+        amariThink('animo');
+    }
 }
 
 function updateHeart() {
@@ -1262,6 +1450,7 @@ function selectArchetypeOption(option) {
     archetypeAnswers[`q${currentQuestion}`] = option;
     currentQuestion++;
     displayQuestion();
+    amariThink('reflexion');
 }
 
 function showArchetypeResults() {
@@ -1307,7 +1496,8 @@ function showArchetypeResults() {
     document.getElementById('archetype-result').style.display = 'block';
     document.getElementById('archetype-result').innerHTML = html;
     
-    amariMood('Arquetipos', `Tus arquetipos: ${top3.map(a => archetypeDescriptions[a].name).join(', ')}`);
+    const archetypeNames = top3.map(a => archetypeDescriptions[a].name).join(', ');
+    amariInteract('Pensando.png', `Tus arquetipos son: ${archetypeNames}. ¡Fascinante!`);
 }
 
 // Test de Arquetipos de Jung
@@ -1365,7 +1555,7 @@ function getOracle() {
         log.prepend(entry);
     }
     
-    amariMood("Mensaje", "Mensaje recibido.");
+    amariInteract('Recepcion.png', `Un mensaje especial para ti: "${randomQuote.text.substring(0, 50)}..."`);
 }
 
 // ==============================================
@@ -1381,6 +1571,11 @@ function scrollToSec(id) {
     document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
     const activeBtn = document.getElementById("btn-" + id);
     if (activeBtn) activeBtn.classList.add("active");
+    
+    // Amari reacciona a la navegación
+    setTimeout(() => {
+        amariThink('reflexion');
+    }, 1000);
 }
 
 // ==============================================
@@ -1493,6 +1688,29 @@ async function generatePDF() {
         y += 15;
     });
     
+    // Interacciones con Amari
+    if (y > 250) {
+        doc.addPage();
+        y = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setTextColor(138, 43, 226);
+    doc.text("Mis conversaciones con Amari:", 20, y);
+    y += 10;
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    
+    userData.interactions.slice(-3).forEach(inter => {
+        if (y > 270) {
+            doc.addPage();
+            y = 20;
+        }
+        doc.text(`• ${new Date(inter.time).toLocaleTimeString()}: ${inter.message}`, 25, y);
+        y += 8;
+    });
+    y += 10;
+    
     // Evaluación rápida
     if (y > 250) {
         doc.addPage();
@@ -1528,7 +1746,7 @@ async function generatePDF() {
     // Guardar PDF
     doc.save(`EcosDeRaiz_${userData.name}_${new Date().toISOString().split('T')[0]}.pdf`);
     
-    amariMood('PDF', 'Tu diario de viaje está listo');
+    amariInteract('Casual.png', 'Tu diario de viaje está listo. ¡Guárdalo con cariño!');
 }
 
 // ==============================================
