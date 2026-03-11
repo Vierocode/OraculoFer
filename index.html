@@ -179,7 +179,7 @@ body {
     border: 2px solid var(--primary);
     border-radius: 60px 60px 20px 60px;
     padding: 15px;
-    width: 200px;
+    width: 220px;
     box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
 }
 
@@ -265,6 +265,57 @@ body {
     background: rgba(255,255,255,0.05);
     border-radius: 20px;
     cursor: pointer;
+}
+
+/* HERRAMIENTAS DE ARTE */
+.art-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.art-tool {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+    font-size: 20px;
+}
+
+.art-tool:hover, .art-tool.active {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.color-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+.color-option {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.2s;
+}
+
+.color-option:hover, .color-option.active {
+    transform: scale(1.2);
+    border-color: white;
 }
 
 /* FACE DETECTION */
@@ -376,6 +427,7 @@ body {
     background: rgba(0,0,0,0.4);
     border-radius: 20px;
     overflow: hidden;
+    position: relative;
 }
 
 .fade-in {
@@ -438,6 +490,7 @@ body {
         <button onclick="scrollToSec('intro')" class="nav-btn active" id="btn-intro"><i class="fas fa-feather"></i></button>
         <button onclick="scrollToSec('sonido')" class="nav-btn" id="btn-sonido"><i class="fas fa-wave-square"></i></button>
         <button onclick="scrollToSec('arte')" class="nav-btn" id="btn-arte"><i class="fas fa-paint-brush"></i></button>
+        <button onclick="scrollToSec('rostro')" class="nav-btn" id="btn-rostro"><i class="fas fa-camera"></i></button>
         <button onclick="scrollToSec('ritmo')" class="nav-btn" id="btn-ritmo"><i class="fas fa-heartbeat"></i></button>
         <button onclick="scrollToSec('arquetipos')" class="nav-btn" id="btn-arquetipos"><i class="fas fa-mask"></i></button>
         <button onclick="scrollToSec('destino')" class="nav-btn" id="btn-destino"><i class="fas fa-star"></i></button>
@@ -466,7 +519,6 @@ body {
         <h4 class="text-cyan tracking-[0.7em] uppercase text-[10px] mb-6 font-bold">Bienvenida a tu origen</h4>
         <h1 class="serif text-6xl md:text-8xl mb-8 leading-tight">Ecos de <br><span class="italic text-purple-400">Raíz</span></h1>
         <p class="max-w-xl mx-auto opacity-60 font-light leading-relaxed mb-10">Un viaje interactivo diseñado para sincronizar tus frecuencias vitales a través del arte digital y la musicoterapia.</p>
-        <button onclick="scrollToSec('sonido')" class="btn-main">Iniciar Ritual</button>
     </div>
 </section>
 
@@ -511,14 +563,46 @@ body {
     </div>
 </section>
 
-<!-- ARTE INTERACTIVO -->
+<!-- ARTE INTERACTIVO MEJORADO -->
 <section id="arte" class="min-h-screen">
     <div class="module-card">
         <h2 class="serif text-4xl mb-10"><i class="fas fa-paint-brush mr-4 text-purple-400"></i>Arte de Energía</h2>
+        
+        <!-- Barra de herramientas de arte -->
+        <div class="art-toolbar">
+            <div class="art-tool active" onclick="setArtTool('brush')" id="tool-brush"><i class="fas fa-paint-brush"></i></div>
+            <div class="art-tool" onclick="setArtTool('circle')" id="tool-circle"><i class="far fa-circle"></i></div>
+            <div class="art-tool" onclick="setArtTool('square')" id="tool-square"><i class="fas fa-square"></i></div>
+            <div class="art-tool" onclick="setArtTool('line')" id="tool-line"><i class="fas fa-slash"></i></div>
+            <div class="art-tool" onclick="setArtTool('spray')" id="tool-spray"><i class="fas fa-spray-can"></i></div>
+            <div class="art-tool" onclick="setArtTool('eraser')" id="tool-eraser"><i class="fas fa-eraser"></i></div>
+        </div>
+        
+        <!-- Selector de colores -->
+        <div class="color-picker">
+            <div class="color-option" style="background: #FF1493;" onclick="setArtColor('#FF1493')"></div>
+            <div class="color-option" style="background: #00FFFF;" onclick="setArtColor('#00FFFF')"></div>
+            <div class="color-option" style="background: #8A2BE2;" onclick="setArtColor('#8A2BE2')"></div>
+            <div class="color-option" style="background: #FFD700;" onclick="setArtColor('#FFD700')"></div>
+            <div class="color-option" style="background: #FF4500;" onclick="setArtColor('#FF4500')"></div>
+            <div class="color-option" style="background: #32CD32;" onclick="setArtColor('#32CD32')"></div>
+            <div class="color-option" style="background: #FFFFFF;" onclick="setArtColor('#FFFFFF')"></div>
+            <div class="color-option" style="background: #000000;" onclick="setArtColor('#000000')"></div>
+        </div>
+        
+        <!-- Tamaño del pincel -->
+        <div class="flex justify-center gap-4 mb-4">
+            <span class="text-xs">Tamaño:</span>
+            <input type="range" id="brush-size" min="1" max="50" value="10" class="w-32">
+        </div>
+        
         <div id="canvas-holder"></div>
+        
         <div class="flex justify-center gap-4 mt-6">
-            <button onclick="clearArt()" class="btn-main text-xs">Limpiar</button>
-            <button onclick="saveArt()" class="btn-main text-xs">Guardar</button>
+            <button onclick="clearArt()" class="btn-main text-xs">Limpiar todo</button>
+            <button onclick="saveArt()" class="btn-main text-xs">Guardar obra</button>
+            <button onclick="addArtSticker('🌸')" class="btn-main text-xs">🌸 Flor</button>
+            <button onclick="addArtSticker('✨')" class="btn-main text-xs">✨ Estrella</button>
         </div>
     </div>
 </section>
@@ -578,23 +662,8 @@ body {
         <button onclick="getOracle()" class="btn-main mb-6">Revelar mensaje</button>
         
         <h3 class="serif text-2xl mt-10 mb-6">Sabiduría para tu viaje</h3>
-        <div class="grid md:grid-cols-2 gap-4 mb-10">
-            <div class="p-4 bg-white/5 rounded-2xl">
-                <i class="fas fa-quote-left text-purple-400 mb-2"></i>
-                <p class="text-sm">"Una mujer con voz es, por definición, una mujer fuerte." - Melinda Gates</p>
-            </div>
-            <div class="p-4 bg-white/5 rounded-2xl">
-                <i class="fas fa-quote-left text-purple-400 mb-2"></i>
-                <p class="text-sm">"No hay límite para lo que podemos lograr como mujeres." - Michelle Obama</p>
-            </div>
-            <div class="p-4 bg-white/5 rounded-2xl">
-                <i class="fas fa-quote-left text-purple-400 mb-2"></i>
-                <p class="text-sm">"La pregunta no es quién me lo va a permitir, sino quién va a detenerme." - Ayn Rand</p>
-            </div>
-            <div class="p-4 bg-white/5 rounded-2xl">
-                <i class="fas fa-quote-left text-purple-400 mb-2"></i>
-                <p class="text-sm">"Las mujeres que buscan ser iguales a los hombres carecen de ambición." - Marilyn Monroe</p>
-            </div>
+        <div class="grid md:grid-cols-2 gap-4 mb-10" id="wisdom-quotes">
+            <!-- Las frases se cargarán dinámicamente según género -->
         </div>
         
         <div id="alchemy-log" class="mt-10 text-left space-y-4 max-h-60 overflow-y-auto p-4 bg-black/30 rounded-2xl"></div>
@@ -641,50 +710,49 @@ const playlist = [
     { title: "Equilibrio Universal", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
 ];
 
-// Frases del oráculo para mujeres
-const oracles = [
-    "Tu intuición es tu superpoder más grande.",
-    "Eres la creadora de tu propia realidad.",
-    "Tu voz merece ser escuchada y valorada.",
-    "La diosa que llevas dentro guía cada paso.",
-    "Tu sensibilidad no es debilidad, es tu fuerza.",
-    "Mereces ocupar espacio y brillar con luz propia.",
-    "Tu historia es única y merece ser contada.",
-    "La sabiduría ancestral fluye por tus venas.",
-    "Eres suficiente, exactamente como eres.",
-    "Tu poder creativo no tiene límites."
-];
-
-// Test de Arquetipos de Jung
-const archetypeQuestions = [
-    {
-        question: "¿Cómo enfrentas los desafíos?",
-        options: {
-            heroe: "Con valentía y determinación, enfrentándolos directamente",
-            sabio: "Buscando conocimiento y entendimiento profundo",
-            amante: "Siguiendo lo que dicta mi corazón y mis pasiones",
-            inocente: "Manteniendo la fe y optimismo en todo momento"
-        }
-    },
-    {
-        question: "¿Qué valoras más en la vida?",
-        options: {
-            explorador: "La libertad y la aventura de descubrir cosas nuevas",
-            creador: "La expresión creativa y dejar mi huella única",
-            gobernante: "El control, el orden y el poder de influir",
-            mago: "La transformación y los misterios de la vida"
-        }
-    },
-    {
-        question: "¿Cómo te relacionas con los demás?",
-        options: {
-            buhonero: "Conectando personas y creando comunidad",
-            cuidador: "Protegiendo y ayudando a quienes lo necesitan",
-            picaro: "Con humor, astucia y disfrutando la vida",
-            heroe: "Liderando y protegiendo a mi grupo"
-        }
-    }
-];
+// Frases según género (basadas en terapeutas reconocidos)
+const quotesByGender = {
+    femenino: [
+        { author: "Marianne Williamson", text: "Nuestro miedo más profundo no es que seamos inadecuados. Nuestro miedo más profundo es que somos poderosos sin límites." },
+        { author: "Brené Brown", text: "La vulnerabilidad no es ganar o perder; es tener el coraje de aparecer y ser visible cuando no tenemos control sobre el resultado." },
+        { author: "Louise Hay", text: "Recuerda que te amas a ti misma. Recuerda que eres digna de amor y respeto. Recuerda que eres importante." },
+        { author: "Esther Perel", text: "La calidad de nuestras relaciones determina la calidad de nuestra vida." },
+        { author: "Deepak Chopra", text: "En el centro de tu ser tienes la respuesta; sabes quién eres y qué quieres." },
+        { author: "Eckhart Tolle", text: "Reconocer la belleza que hay en ti es el primer paso para amarte incondicionalmente." },
+        { author: "Byron Katie", text: "Solo hay tres tipos de negocios en el universo: el mío, el tuyo y el de Dios." },
+        { author: "Pema Chödrön", text: "Tú eres el cielo. Todo lo demás es el clima." }
+    ],
+    masculino: [
+        { author: "Carl Jung", text: "Quien mira hacia afuera, sueña; quien mira hacia adentro, despierta." },
+        { author: "Jordan Peterson", text: "Compara tu identidad actual con la que podrías llegar a ser, no con la de los demás." },
+        { author: "Robert Bly", text: "El verdadero hombre moderno es aquel que ha integrado su lado femenino sin perder su esencia." },
+        { author: "David Deida", text: "Tu propósito no es solo lo que haces, sino cómo ofreces tu energía al mundo." },
+        { author: "James Hollis", text: "La segunda mitad de la vida se trata de convertirte en quien realmente eres." },
+        { author: "Joseph Campbell", text: "La cueva en la que temes entrar guarda el tesoro que buscas." },
+        { author: "Carlos Castaneda", text: "El camino del guerrero es el camino de la impecabilidad." },
+        { author: "John Bradshaw", text: "Sanar al niño interior es el trabajo más importante que podemos hacer." }
+    ],
+    'no-binario': [
+        { author: "Carl Jung", text: "Cada uno de nosotros tiene un lado femenino y masculino; la totalidad es integrar ambos." },
+        { author: "bell hooks", text: "La sanación es un acto de comunión, un reconocimiento de que todos estamos conectados." },
+        { author: "Judith Butler", text: "La identidad no es fija, es una performance continua de quienes elegimos ser." },
+        { author: "Alan Watts", text: "Eres una expresión del universo, tan única como temporal." },
+        { author: "Rupi Kaur", text: "Tu cuerpo no es una carga, es un hogar. Trátalo como tal." },
+        { author: "Audre Lorde", text: "Cuidarme a mí misma no es autocomplacencia, es autopreservación." },
+        { author: "Ram Dass", text: "Todos somos caminantes en este viaje llamado vida." },
+        { author: "Thich Nhat Hanh", text: "La paz en ti mismo es la base de toda transformación." }
+    ],
+    otro: [
+        { author: "Carl Jung", text: "Hasta que hagas consciente lo inconsciente, dirigirá tu vida y lo llamarás destino." },
+        { author: "Virginia Satir", text: "Necesitamos 4 abrazos al día para sobrevivir, 8 para mantenernos y 12 para crecer." },
+        { author: "Bert Hellinger", text: "El amor verdadero respeta el orden del alma." },
+        { author: "Fritjof Capra", text: "La nueva visión de la realidad implica entender las interconexiones de todo." },
+        { author: "Ken Wilber", text: "Todo es verdad en parte, falso en parte, y ambas cosas son ciertas." },
+        { author: "Rupert Spira", text: "La felicidad es tu naturaleza; no es algo que debas perseguir." },
+        { author: "Mooji", text: "Eres la conciencia que observa los pensamientos, no los pensamientos mismos." },
+        { author: "Adyashanti", text: "La rendición es dejar de lado la esperanza de un pasado mejor." }
+    ]
+};
 
 // ==============================================
 // REGISTRO DE USUARIO
@@ -705,9 +773,34 @@ function completeRegistration() {
     }
     
     document.getElementById('registration-modal').style.display = 'none';
+    
+    // Scroll suave al inicio de la página
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
     amariMood('Bienvenida', `¡Hola ${userData.name}! Me alegra que estés aquí.`);
     initFaceDetection();
     startArchetypeTest();
+    loadQuotesByGender();
+}
+
+function loadQuotesByGender() {
+    const quotesContainer = document.getElementById('wisdom-quotes');
+    const gender = userData.gender || 'otro';
+    const quotes = quotesByGender[gender] || quotesByGender.otro;
+    
+    // Seleccionar 4 frases aleatorias
+    const selectedQuotes = [...quotes].sort(() => 0.5 - Math.random()).slice(0, 4);
+    
+    quotesContainer.innerHTML = selectedQuotes.map(q => `
+        <div class="p-4 bg-white/5 rounded-2xl">
+            <i class="fas fa-quote-left text-purple-400 mb-2"></i>
+            <p class="text-sm">"${q.text}"</p>
+            <p class="text-xs opacity-50 mt-2">- ${q.author}</p>
+        </div>
+    `).join('');
 }
 
 // ==============================================
@@ -878,17 +971,26 @@ if (canvasOsc) {
 }
 
 // ==============================================
-// P5 ARTE CANVAS
+// ARTE INTERACTIVO MEJORADO (p5.js)
 // ==============================================
+let currentTool = 'brush';
+let currentColor = '#FF1493';
+let brushSize = 10;
+let artHistory = [];
+
 const holder = document.getElementById("canvas-holder");
 if (holder) {
     new p5((p) => {
         let img;
+        let drawing = false;
+        let lastX, lastY;
         
         p.setup = () => {
             const cnv = p.createCanvas(holder.offsetWidth, 400);
             cnv.parent("canvas-holder");
             p.background(5);
+            p.strokeCap(p.ROUND);
+            p.strokeJoin(p.ROUND);
         };
         
         p.draw = () => {
@@ -899,9 +1001,68 @@ if (holder) {
         };
         
         p.mouseDragged = () => {
-            p.noStroke();
-            p.fill(0, 255, 255, 40);
-            p.ellipse(p.mouseX, p.mouseY, 20);
+            if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
+            
+            const size = parseInt(document.getElementById('brush-size').value);
+            
+            switch(currentTool) {
+                case 'brush':
+                    p.stroke(currentColor);
+                    p.strokeWeight(size);
+                    p.line(lastX || p.mouseX, lastY || p.mouseY, p.mouseX, p.mouseY);
+                    break;
+                    
+                case 'spray':
+                    p.stroke(currentColor);
+                    p.strokeWeight(1);
+                    for (let i = 0; i < 10; i++) {
+                        let x = p.mouseX + p.random(-size, size);
+                        let y = p.mouseY + p.random(-size, size);
+                        p.point(x, y);
+                    }
+                    break;
+                    
+                case 'eraser':
+                    p.stroke(5);
+                    p.strokeWeight(size);
+                    p.line(lastX || p.mouseX, lastY || p.mouseY, p.mouseX, p.mouseY);
+                    break;
+            }
+            
+            lastX = p.mouseX;
+            lastY = p.mouseY;
+        };
+        
+        p.mousePressed = () => {
+            if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
+            
+            const size = parseInt(document.getElementById('brush-size').value);
+            
+            if (currentTool === 'circle') {
+                p.noFill();
+                p.stroke(currentColor);
+                p.strokeWeight(2);
+                p.ellipse(p.mouseX, p.mouseY, size * 2);
+            } else if (currentTool === 'square') {
+                p.noFill();
+                p.stroke(currentColor);
+                p.strokeWeight(2);
+                p.rect(p.mouseX - size, p.mouseY - size, size * 2, size * 2);
+            } else if (currentTool === 'line') {
+                // Se dibuja al soltar el mouse
+            } else {
+                p.stroke(currentColor);
+                p.strokeWeight(size);
+                p.point(p.mouseX, p.mouseY);
+            }
+            
+            lastX = p.mouseX;
+            lastY = p.mouseY;
+        };
+        
+        p.mouseReleased = () => {
+            lastX = null;
+            lastY = null;
         };
         
         window.clearArt = () => {
@@ -910,10 +1071,29 @@ if (holder) {
         };
         
         window.saveArt = () => {
-            p.saveCanvas("mi_raiz", "png");
-            userData.artCreated = new Date();
+            p.saveCanvas("mi_obra_arte", "png");
+            amariMood('Arte', '¡Obra guardada!');
+        };
+        
+        window.addArtSticker = (sticker) => {
+            p.fill(currentColor);
+            p.noStroke();
+            p.textSize(30);
+            p.text(sticker, p.mouseX || p.width/2, p.mouseY || p.height/2);
         };
     });
+}
+
+function setArtTool(tool) {
+    currentTool = tool;
+    document.querySelectorAll('.art-tool').forEach(t => t.classList.remove('active'));
+    document.getElementById(`tool-${tool}`).classList.add('active');
+}
+
+function setArtColor(color) {
+    currentColor = color;
+    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
 }
 
 // ==============================================
@@ -1130,20 +1310,58 @@ function showArchetypeResults() {
     amariMood('Arquetipos', `Tus arquetipos: ${top3.map(a => archetypeDescriptions[a].name).join(', ')}`);
 }
 
+// Test de Arquetipos de Jung
+const archetypeQuestions = [
+    {
+        question: "¿Cómo enfrentas los desafíos?",
+        options: {
+            heroe: "Con valentía y determinación, enfrentándolos directamente",
+            sabio: "Buscando conocimiento y entendimiento profundo",
+            amante: "Siguiendo lo que dicta mi corazón y mis pasiones",
+            inocente: "Manteniendo la fe y optimismo en todo momento"
+        }
+    },
+    {
+        question: "¿Qué valoras más en la vida?",
+        options: {
+            explorador: "La libertad y la aventura de descubrir cosas nuevas",
+            creador: "La expresión creativa y dejar mi huella única",
+            gobernante: "El control, el orden y el poder de influir",
+            mago: "La transformación y los misterios de la vida"
+        }
+    },
+    {
+        question: "¿Cómo te relacionas con los demás?",
+        options: {
+            buhonero: "Conectando personas y creando comunidad",
+            cuidador: "Protegiendo y ayudando a quienes lo necesitan",
+            picaro: "Con humor, astucia y disfrutando la vida",
+            heroe: "Liderando y protegiendo a mi grupo"
+        }
+    }
+];
+
 // ==============================================
-// ORÁCULO
+// ORÁCULO ADAPTADO AL GÉNERO
 // ==============================================
 function getOracle() {
-    const msg = oracles[Math.floor(Math.random() * oracles.length)];
-    document.getElementById("oracle-text").innerText = '"' + msg + '"';
+    const gender = userData.gender || 'otro';
+    const quotes = quotesByGender[gender] || quotesByGender.otro;
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     
-    userData.oracleMessages.push({ time: new Date(), message: msg });
+    document.getElementById("oracle-text").innerHTML = `"${randomQuote.text}"<br><span class="text-xs opacity-50">- ${randomQuote.author}</span>`;
+    
+    userData.oracleMessages.push({ 
+        time: new Date(), 
+        message: randomQuote.text,
+        author: randomQuote.author 
+    });
     
     const log = document.getElementById("alchemy-log");
     if (log) {
         const entry = document.createElement("div");
         entry.className = "p-3 bg-purple-500/20 rounded-xl";
-        entry.innerHTML = "<small>" + new Date().toLocaleTimeString() + "</small><br>" + msg;
+        entry.innerHTML = `<small>${new Date().toLocaleTimeString()}</small><br>"${randomQuote.text}"<br><small class="opacity-50">- ${randomQuote.author}</small>`;
         log.prepend(entry);
     }
     
@@ -1243,11 +1461,11 @@ async function generatePDF() {
         }
         doc.text(`"${msg.message}"`, 25, y);
         y += 10;
-        doc.text(`- ${new Date(msg.time).toLocaleTimeString()}`, 30, y);
+        doc.text(`- ${msg.author}, ${new Date(msg.time).toLocaleTimeString()}`, 30, y);
         y += 15;
     });
     
-    // Frases inspiradoras
+    // Frases inspiradoras según género
     if (y > 230) {
         doc.addPage();
         y = 20;
@@ -1260,20 +1478,19 @@ async function generatePDF() {
     doc.setFontSize(10);
     doc.setTextColor(255, 255, 255);
     
-    const frases = [
-        "Tu voz importa. Tu presencia es poderosa.",
-        "La diosa que llevas dentro guía cada paso.",
-        "Eres la creadora de tu propia realidad.",
-        "No hay límites para lo que puedes lograr."
-    ];
+    const gender = userData.gender || 'otro';
+    const quotes = quotesByGender[gender] || quotesByGender.otro;
+    const selectedQuotes = [...quotes].sort(() => 0.5 - Math.random()).slice(0, 4);
     
-    frases.forEach(frase => {
+    selectedQuotes.forEach(quote => {
         if (y > 270) {
             doc.addPage();
             y = 20;
         }
-        doc.text(`✨ ${frase}`, 25, y);
-        y += 10;
+        doc.text(`✨ "${quote.text}"`, 25, y);
+        y += 8;
+        doc.text(`- ${quote.author}`, 30, y);
+        y += 15;
     });
     
     // Evaluación rápida
