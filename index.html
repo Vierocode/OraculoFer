@@ -1,838 +1,481 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0,
-user-scalable=no,
-viewport-fit=cover">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>El Archivo del Alma | Experiencia Sensorial</title>
-
 <meta name="theme-color" content="#07020d">
-
 <script src="https://cdn.tailwindcss.com"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 <style>
-
 :root {
-
---primary:#8A2BE2;
---secondary:#00FFFF;
---accent:#FF1493;
-
---bg-dark:#07020d;
---bg-glass:rgba(255,255,255,0.04);
-
---border:rgba(255,255,255,0.1);
-
---text-main:#f0eaff;
-
---transition:0.4s ease;
-
-/* VARIABLES PARA CAMBIO POR GÉNERO */
-
---theme-masculino-primary:#3b82f6;
---theme-masculino-accent:#f97316;
-
---theme-femenino-primary:#ec4899;
---theme-femenino-accent:#a855f7;
-
---theme-neutral-primary:#94a3b8;
---theme-neutral-accent:#cbd5f5;
-
+    --primary: #8A2BE2;
+    --secondary: #00FFFF;
+    --accent: #FF1493;
+    --bg-dark: #07020d;
+    --bg-glass: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.1);
+    --text-main: #f0eaff;
+    --transition: 0.4s ease;
 }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-html{
-scroll-behavior:smooth;
+html {
+    scroll-behavior: smooth;
 }
 
-body{
-
-font-family:'Inter',sans-serif;
-
-background-color:var(--bg-dark);
-
-color:var(--text-main);
-
-overflow-x:hidden;
-
-background:radial-gradient(circle at top right,#1a0b2e 0%,#07020d 100%);
-
--webkit-font-smoothing:antialiased;
-
-text-rendering:optimizeLegibility;
-
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+    background: radial-gradient(circle at top right, #1a0b2e 0%, #07020d 100%);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
-.serif{
-font-family:'Playfair Display',serif;
+.serif {
+    font-family: 'Playfair Display', serif;
 }
 
-#bg-canvas{
-
-position:fixed;
-
-top:0;
-left:0;
-
-z-index:-1;
-
-width:100%;
-height:100%;
-
-pointer-events:none;
-
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-#nav-nebula{
-
-position:fixed;
-
-top:25px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-z-index:10000;
-
-width:90%;
-
-max-width:620px;
-
+#nav-nebula {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    width: 90%;
+    max-width: 620px;
 }
 
-.nav-blur{
-
-background:rgba(15,5,25,0.6);
-
-backdrop-filter:blur(20px);
-
--webkit-backdrop-filter:blur(20px);
-
-border:1px solid var(--border);
-
-border-radius:100px;
-
-padding:10px 20px;
-
-display:flex;
-
-justify-content:space-around;
-
-align-items:center;
-
-box-shadow:0 20px 50px rgba(0,0,0,0.8);
-
+.nav-blur {
+    background: rgba(15,5,25,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
 }
 
-.nav-btn{
-
-color:rgba(255,255,255,0.5);
-
-font-size:1.2rem;
-
-transition:all var(--transition);
-
-padding:10px;
-
-border-radius:50%;
-
-cursor:pointer;
-
-background:none;
-
-border:none;
-
+.nav-btn {
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2rem;
+    transition: all var(--transition);
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+    border: none;
 }
 
-.nav-btn.active{
-
-color:var(--secondary);
-
-background:rgba(255,255,255,0.08);
-
-transform:scale(1.2);
-
-text-shadow:0 0 10px var(--secondary);
-
+.nav-btn.active {
+    color: var(--secondary);
+    background: rgba(255,255,255,0.08);
+    transform: scale(1.2);
+    text-shadow: 0 0 10px var(--secondary);
 }
 
-.module-card{
-
-background:var(--bg-glass);
-
-backdrop-filter:blur(12px);
-
--webkit-backdrop-filter:blur(12px);
-
-border:1px solid var(--border);
-
-border-radius:40px;
-
-padding:35px;
-
-margin-bottom:50px;
-
-transition:all var(--transition);
-
+.module-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 35px;
+    margin-bottom: 50px;
+    transition: all var(--transition);
 }
 
-.btn-main{
-
-background:linear-gradient(135deg,var(--primary),var(--accent));
-
-padding:15px 35px;
-
-border-radius:50px;
-
-font-weight:600;
-
-text-transform:uppercase;
-
-letter-spacing:2px;
-
-font-size:11px;
-
-box-shadow:0 10px 25px rgba(0,0,0,0.4);
-
-transition:all var(--transition);
-
-cursor:pointer;
-
-border:none;
-
-color:white;
-
+.btn-main {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    padding: 15px 35px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: all var(--transition);
+    cursor: pointer;
+    border: none;
+    color: white;
 }
 
-.btn-main:hover{
-
-transform:translateY(-2px);
-
+.btn-main:hover {
+    transform: translateY(-2px);
 }
 
-.btn-main:active{
-
-transform:scale(0.95);
-
+.btn-main:active {
+    transform: scale(0.95);
 }
 
-#music-player{
-
-position:fixed;
-
-bottom:20px;
-
-left:20px;
-
-background:rgba(0,0,0,0.6);
-
-backdrop-filter:blur(10px);
-
--webkit-backdrop-filter:blur(10px);
-
-padding:10px 15px;
-
-border-radius:20px;
-
-font-size:12px;
-
-color:white;
-
-width:180px;
-
-z-index:9999;
-
+#music-player {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+    width: 180px;
+    z-index: 9999;
 }
 
-#track-title{
-
-text-align:center;
-
-margin-bottom:6px;
-
-font-weight:600;
-
-font-size:11px;
-
-opacity:0.85;
-
+#track-title {
+    text-align: center;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 11px;
+    opacity: 0.85;
 }
 
-.player-controls{
-
-display:flex;
-
-justify-content:space-around;
-
-align-items:center;
-
+.player-controls {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
-.player-controls button{
-
-background:none;
-
-border:none;
-
-color:white;
-
-font-size:16px;
-
-cursor:pointer;
-
-transition:0.2s;
-
+.player-controls button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.player-controls button:hover{
-
-transform:scale(1.2);
-
+.player-controls button:hover {
+    transform: scale(1.2);
 }
 
 /* AMARI ASISTENTE */
-
-#amari-pip{
-
-position:fixed;
-
-bottom:20px;
-
-right:20px;
-
-z-index:10001;
-
-cursor:move;
-
-user-select:none;
-
+#amari-pip {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10001;
+    cursor: move;
+    user-select: none;
 }
 
-.amari-window{
-
-background:rgba(20,10,30,0.85);
-
-backdrop-filter:blur(10px);
-
--webkit-backdrop-filter:blur(10px);
-
-border:2px solid var(--primary);
-
-border-radius:60px 60px 20px 60px;
-
-padding:15px;
-
-width:220px;
-
-box-shadow:0 10px 30px rgba(138,43,226,0.3);
-
+.amari-window {
+    background: rgba(20,10,30,0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--primary);
+    border-radius: 60px 60px 20px 60px;
+    padding: 15px;
+    width: 220px;
+    box-shadow: 0 10px 30px rgba(138,43,226,0.3);
 }
 
-#amari-avatar{
-
-width:60px;
-
-height:60px;
-
-border-radius:50%;
-
-border:3px solid var(--secondary);
-
-margin:0 auto 10px;
-
-display:block;
-
-object-fit:cover;
-
-background:linear-gradient(135deg,var(--primary),var(--accent));
-
+#amari-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid var(--secondary);
+    margin: 0 auto 10px;
+    display: block;
+    object-fit: cover;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
 }
 
-.amari-msg{
-
-background:rgba(255,255,255,0.1);
-
-border-radius:20px;
-
-padding:12px;
-
-font-size:12px;
-
-text-align:center;
-
-margin:10px 0;
-
-border:1px solid var(--border);
-
-min-height:60px;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
+.amari-msg {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 12px;
+    font-size: 12px;
+    text-align: center;
+    margin: 10px 0;
+    border: 1px solid var(--border);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.amari-controls{
-
-display:flex;
-
-justify-content:center;
-
-gap:10px;
-
+.amari-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
-.amari-controls button{
-
-background:rgba(255,255,255,0.1);
-
-border:none;
-
-color:white;
-
-width:30px;
-
-height:30px;
-
-border-radius:50%;
-
-cursor:pointer;
-
-transition:0.2s;
-
+.amari-controls button {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.amari-controls button:hover{
-
-background:var(--primary);
-
-transform:scale(1.1);
-
+.amari-controls button:hover {
+    background: var(--primary);
+    transform: scale(1.1);
 }
 
 /* AMARI PENSANDO */
-
-.amari-thinking{
-animation:pulse 1.5s infinite;
+.amari-thinking {
+    animation: pulse 1.5s infinite;
 }
 
-@keyframes pulse{
-
-0%{opacity:1;}
-50%{opacity:0.5;}
-100%{opacity:1;}
-
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
 }
 
 /* MODAL REGISTRO */
-
-.modal-overlay{
-
-position:fixed;
-
-top:0;
-left:0;
-
-width:100%;
-height:100%;
-
-background:rgba(0,0,0,0.8);
-
-backdrop-filter:blur(10px);
-
-z-index:20000;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.registration-modal{
-
-background:linear-gradient(145deg,#1a0f2a,#0d0717);
-
-border:2px solid var(--primary);
-
-border-radius:40px;
-
-padding:40px;
-
-max-width:450px;
-
-width:90%;
-
-box-shadow:0 20px 50px rgba(138,43,226,0.5);
-
+.registration-modal {
+    background: linear-gradient(145deg,#1a0f2a,#0d0717);
+    border: 2px solid var(--primary);
+    border-radius: 40px;
+    padding: 40px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 20px 50px rgba(138,43,226,0.5);
 }
 
-.registration-input{
-
-width:100%;
-
-padding:15px;
-
-margin:10px 0;
-
-background:rgba(255,255,255,0.1);
-
-border:1px solid var(--border);
-
-border-radius:30px;
-
-color:white;
-
-font-size:16px;
-
+.registration-input {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    color: white;
+    font-size: 16px;
 }
 
-.gender-option{
-
-display:flex;
-
-align-items:center;
-
-gap:10px;
-
-margin:10px 0;
-
-padding:10px;
-
-background:rgba(255,255,255,0.05);
-
-border-radius:20px;
-
-cursor:pointer;
-
+.gender-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    cursor: pointer;
 }
 
 /* HERRAMIENTAS ARTE */
-
-.art-toolbar{
-
-display:flex;
-
-gap:10px;
-
-margin-bottom:20px;
-
-flex-wrap:wrap;
-
-justify-content:center;
-
+.art-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.art-tool{
-
-background:rgba(255,255,255,0.1);
-
-border:1px solid var(--border);
-
-border-radius:50%;
-
-width:50px;
-
-height:50px;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-cursor:pointer;
-
-transition:0.2s;
-
-color:white;
-
-font-size:20px;
-
+.art-tool {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+    font-size: 20px;
 }
 
-.art-tool:hover,
-.art-tool.active{
-
-background:var(--primary);
-
-transform:scale(1.1);
-
+.art-tool:hover, .art-tool.active {
+    background: var(--primary);
+    transform: scale(1.1);
 }
 
-.color-picker{
-
-display:flex;
-
-gap:8px;
-
-flex-wrap:wrap;
-
-justify-content:center;
-
-margin:15px 0;
-
+.color-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 15px 0;
 }
 
-.color-option{
-
-width:35px;
-
-height:35px;
-
-border-radius:50%;
-
-cursor:pointer;
-
-border:2px solid transparent;
-
-transition:0.2s;
-
+.color-option {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.2s;
 }
 
-.color-option:hover,
-.color-option.active{
-
-transform:scale(1.2);
-
-border-color:white;
-
+.color-option:hover, .color-option.active {
+    transform: scale(1.2);
+    border-color: white;
 }
 
 /* FACE DETECTION */
-
-#camera-container{
-
-width:100%;
-
-max-width:640px;
-
-margin:20px auto;
-
-position:relative;
-
-border-radius:30px;
-
-overflow:hidden;
-
-border:3px solid var(--primary);
-
+#camera-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 20px auto;
+    position: relative;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 3px solid var(--primary);
 }
 
-#video-element,
-#canvas-overlay{
-
-width:100%;
-
-height:auto;
-
-display:block;
-
+#video-element, #canvas-overlay {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
-#canvas-overlay{
-
-position:absolute;
-
-top:0;
-left:0;
-
+#canvas-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-.face-qualities{
-
-background:rgba(0,0,0,0.7);
-
-backdrop-filter:blur(10px);
-
-border-radius:20px;
-
-padding:20px;
-
-margin:20px 0;
-
-border:1px solid var(--secondary);
-
+.face-qualities {
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--secondary);
 }
 
 /* ARQUETIPOS */
-
-.archetype-question{
-
-background:rgba(255,255,255,0.05);
-
-border-radius:20px;
-
-padding:20px;
-
-margin:20px 0;
-
-border-left:4px solid var(--primary);
-
+.archetype-question {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid var(--primary);
 }
 
-.archetype-option{
-
-display:block;
-
-padding:15px;
-
-margin:10px 0;
-
-background:rgba(255,255,255,0.1);
-
-border-radius:15px;
-
-cursor:pointer;
-
-transition:0.2s;
-
+.archetype-option {
+    display: block;
+    padding: 15px;
+    margin: 10px 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.archetype-option:hover{
-
-background:rgba(138,43,226,0.3);
-
+.archetype-option:hover {
+    background: rgba(138,43,226,0.3);
 }
 
-.archetype-option.selected{
-
-background:var(--primary);
-
-border:2px solid var(--secondary);
-
+.archetype-option.selected {
+    background: var(--primary);
+    border: 2px solid var(--secondary);
 }
 
-.archetype-result{
-
-background:linear-gradient(135deg,var(--primary),var(--accent));
-
-border-radius:20px;
-
-padding:20px;
-
-margin:10px;
-
-text-align:center;
-
+.archetype-result {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 20px;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
 }
 
 /* PDF */
-
-.download-btn{
-
-background:linear-gradient(135deg,#00ff87,#60efff);
-
-color:black;
-
-font-weight:bold;
-
-padding:15px 30px;
-
-border-radius:50px;
-
-border:none;
-
-cursor:pointer;
-
-transition:0.2s;
-
-margin:10px;
-
+.download-btn {
+    background: linear-gradient(135deg,#00ff87,#60efff);
+    color: black;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 10px;
 }
 
-.download-btn:hover{
-transform:scale(1.05);
+.download-btn:hover {
+    transform: scale(1.05);
 }
 
-::-webkit-scrollbar{
-width:6px;
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-::-webkit-scrollbar-thumb{
-background:var(--primary);
-border-radius:10px;
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
 }
 
-#freq-container{
-
-width:100%;
-
-max-width:420px;
-
-margin:auto;
-
+#freq-container {
+    width: 100%;
+    max-width: 420px;
+    margin: auto;
 }
 
-#osc-canvas{
-
-width:100%;
-
-height:150px;
-
-background:rgba(0,0,0,0.4);
-
-border-radius:12px;
-
+#osc-canvas {
+    width: 100%;
+    height: 150px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 12px;
 }
 
-#canvas-holder{
-
-width:100%;
-
-height:400px;
-
-background:rgba(0,0,0,0.4);
-
-border-radius:20px;
-
-overflow:hidden;
-
-position:relative;
-
+#canvas-holder {
+    width: 100%;
+    height: 400px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
 }
 
-.fade-in{
-
-opacity:0;
-
-transform:translateY(30px);
-
-transition:0.8s ease;
-
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.8s ease;
 }
-
 </style>
 </head>
 <body>
@@ -841,993 +484,918 @@ transition:0.8s ease;
 
 <!-- MODAL DE REGISTRO INICIAL -->
 <div id="registration-modal" class="modal-overlay">
-
-<div class="registration-modal">
-
-<h2 class="serif text-3xl mb-6 text-center">
-Bienvenida a tu viaje interior
-</h2>
-
-<p class="text-center opacity-70 mb-8">
-Antes de comenzar, cuéntanos quién eres
-</p>
-
-<label class="sr-only">Nombre</label>
-<input
-type="text"
-id="user-name"
-class="registration-input"
-placeholder="Tu nombre"
-autocomplete="name"
-maxlength="40">
-
-<label class="sr-only">Edad</label>
-<input
-type="number"
-id="user-age"
-class="registration-input"
-placeholder="Tu edad"
-min="10"
-max="120"
-inputmode="numeric">
-
-<div style="margin:20px 0;">
-
-<div class="gender-option" onclick="selectGender('femenino')">
-<input type="radio" name="gender" value="femenino" id="gender-f">
-<label for="gender-f">Femenino</label>
-</div>
-
-<div class="gender-option" onclick="selectGender('masculino')">
-<input type="radio" name="gender" value="masculino" id="gender-m">
-<label for="gender-m">Masculino</label>
-</div>
-
-<div class="gender-option" onclick="selectGender('no-binario')">
-<input type="radio" name="gender" value="no-binario" id="gender-nb">
-<label for="gender-nb">No binario</label>
-</div>
-
-<div class="gender-option" onclick="selectGender('otro')">
-<input type="radio" name="gender" value="otro" id="gender-o">
-<label for="gender-o">Otro / Prefiero no decirlo</label>
-</div>
-
-</div>
-
-<button
-onclick="completeRegistration()"
-class="btn-main w-full">
-
-Comenzar experiencia
-
-</button>
-
-</div>
+    <div class="registration-modal">
+        <h2 class="serif text-3xl mb-6 text-center">Bienvenida a tu viaje interior</h2>
+        <p class="text-center opacity-70 mb-8">Antes de comenzar, cuéntanos quién eres</p>
+        <label class="sr-only">Nombre</label>
+        <input type="text" id="user-name" class="registration-input" placeholder="Tu nombre" autocomplete="name" maxlength="40">
+        <label class="sr-only">Edad</label>
+        <input type="number" id="user-age" class="registration-input" placeholder="Tu edad" min="10" max="120" inputmode="numeric">
+        <div style="margin:20px 0;">
+            <div class="gender-option" onclick="selectGender('femenino')">
+                <input type="radio" name="gender" value="femenino" id="gender-f">
+                <label for="gender-f">Femenino</label>
+            </div>
+            <div class="gender-option" onclick="selectGender('masculino')">
+                <input type="radio" name="gender" value="masculino" id="gender-m">
+                <label for="gender-m">Masculino</label>
+            </div>
+            <div class="gender-option" onclick="selectGender('no-binario')">
+                <input type="radio" name="gender" value="no-binario" id="gender-nb">
+                <label for="gender-nb">No binario</label>
+            </div>
+            <div class="gender-option" onclick="selectGender('otro')">
+                <input type="radio" name="gender" value="otro" id="gender-o">
+                <label for="gender-o">Otro / Prefiero no decirlo</label>
+            </div>
+        </div>
+        <button onclick="completeRegistration()" class="btn-main w-full">Comenzar experiencia</button>
+    </div>
 </div>
 
 <!-- REPRODUCTOR MUSICAL -->
-
 <div id="music-player">
-
-<div id="track-title">
-Experiencia Sonora
-</div>
-
-<div class="player-controls">
-
-<button onclick="prevTrack()" aria-label="Anterior">
-<i class="fas fa-backward"></i>
-</button>
-
-<button onclick="toggleMusic()" id="play-btn" aria-label="Reproducir">
-<i class="fas fa-play"></i>
-</button>
-
-<button onclick="nextTrack()" aria-label="Siguiente">
-<i class="fas fa-forward"></i>
-</button>
-
-</div>
+    <div id="track-title">Experiencia Sonora</div>
+    <div class="player-controls">
+        <button onclick="prevTrack()" aria-label="Anterior"><i class="fas fa-backward"></i></button>
+        <button onclick="toggleMusic()" id="play-btn" aria-label="Reproducir"><i class="fas fa-play"></i></button>
+        <button onclick="nextTrack()" aria-label="Siguiente"><i class="fas fa-forward"></i></button>
+    </div>
 </div>
 
 <audio id="bg-music" loop preload="auto"></audio>
 
 <!-- NAVEGACIÓN -->
-
 <nav id="nav-nebula">
-
-<div class="nav-blur">
-
-<button onclick="scrollToSec('intro')" class="nav-btn active" id="btn-intro">
-<i class="fas fa-feather"></i>
-</button>
-
-<button onclick="scrollToSec('sonido')" class="nav-btn" id="btn-sonido">
-<i class="fas fa-wave-square"></i>
-</button>
-
-<button onclick="scrollToSec('arte')" class="nav-btn" id="btn-arte">
-<i class="fas fa-paint-brush"></i>
-</button>
-
-<button onclick="scrollToSec('rostro')" class="nav-btn" id="btn-rostro">
-<i class="fas fa-camera"></i>
-</button>
-
-<button onclick="scrollToSec('ritmo')" class="nav-btn" id="btn-ritmo">
-<i class="fas fa-heartbeat"></i>
-</button>
-
-<button onclick="scrollToSec('arquetipos')" class="nav-btn" id="btn-arquetipos">
-<i class="fas fa-mask"></i>
-</button>
-
-<button onclick="scrollToSec('destino')" class="nav-btn" id="btn-destino">
-<i class="fas fa-star"></i>
-</button>
-
-</div>
+    <div class="nav-blur">
+        <button onclick="scrollToSec('intro')" class="nav-btn active" id="btn-intro"><i class="fas fa-feather"></i></button>
+        <button onclick="scrollToSec('sonido')" class="nav-btn" id="btn-sonido"><i class="fas fa-wave-square"></i></button>
+        <button onclick="scrollToSec('arte')" class="nav-btn" id="btn-arte"><i class="fas fa-paint-brush"></i></button>
+        <button onclick="scrollToSec('rostro')" class="nav-btn" id="btn-rostro"><i class="fas fa-camera"></i></button>
+        <button onclick="scrollToSec('ritmo')" class="nav-btn" id="btn-ritmo"><i class="fas fa-heartbeat"></i></button>
+        <button onclick="scrollToSec('arquetipos')" class="nav-btn" id="btn-arquetipos"><i class="fas fa-mask"></i></button>
+        <button onclick="scrollToSec('destino')" class="nav-btn" id="btn-destino"><i class="fas fa-star"></i></button>
+    </div>
 </nav>
 
 <!-- AMARI ASISTENTE -->
-
 <div id="amari-pip">
-
-<div class="amari-window" id="amari-window">
-
-<img
-src="imagen/Recepcion.png"
-id="amari-avatar"
-alt="Amari"
-onerror="this.src='https://via.placeholder.com/60/8A2BE2/ffffff?text=Amari'">
-
-<div class="amari-msg" id="amari-speech">
-¿Qué intención traes hoy?
-</div>
-
-<div class="amari-controls">
-
-<button
-onclick="amariInteract('Pensando.png','Analizando energía...')"
-title="Pensar">
-
-<i class="fas fa-sync"></i>
-
-</button>
-
-<button
-onclick="amariInteract('Casual.png','¡Me encanta!')"
-title="Casual">
-
-<i class="fas fa-heart"></i>
-
-</button>
-
-<button
-onclick="amariInteract('Caminando1.png','Acompañándote en el viaje...')"
-title="Caminar">
-
-<i class="fas fa-walking"></i>
-
-</button>
-
-</div>
-</div>
+    <div class="amari-window" id="amari-window">
+        <img src="imagen/Recepcion.png" id="amari-avatar" alt="Amari" onerror="this.src='https://via.placeholder.com/60/8A2BE2/ffffff?text=Amari'">
+        <div class="amari-msg" id="amari-speech">¿Qué intención traes hoy?</div>
+        <div class="amari-controls">
+            <button onclick="amariInteract('Pensando.png','Analizando energía...')" title="Pensar"><i class="fas fa-sync"></i></button>
+            <button onclick="amariInteract('Casual.png','¡Me encanta!')" title="Casual"><i class="fas fa-heart"></i></button>
+            <button onclick="amariInteract('Caminando1.png','Acompañándote en el viaje...')" title="Caminar"><i class="fas fa-walking"></i></button>
+        </div>
+    </div>
 </div>
 
 <!-- CONTENIDO PRINCIPAL -->
-
 <main class="container mx-auto px-6 pt-32 pb-20 max-w-5xl">
-
-<!-- INTRO -->
-
-<section id="intro" class="min-h-screen flex flex-col justify-center text-center">
-
-<div class="module-card bg-transparent border-none">
-
-<h4 class="text-cyan tracking-[0.7em] uppercase text-[10px] mb-6 font-bold">
-Bienvenida a tu origen
-</h4>
-
-<h1 class="serif text-6xl md:text-8xl mb-8 leading-tight">
-El Archivo del
-<br>
-<span class="italic text-purple-400">Alma</span>
-</h1>
-
-<p class="max-w-xl mx-auto opacity-60 font-light leading-relaxed mb-10">
-Un viaje interactivo diseñado para sincronizar tus frecuencias vitales a través del arte digital y la musicoterapia.
-</p>
-
-</div>
-
-</section>
-
-<!-- SONIDO -->
-
-<section id="sonido" class="min-h-screen">
-
-<div class="module-card">
-
-<h2 class="serif text-4xl mb-10">
-<i class="fas fa-adjust mr-4 text-purple-400"></i>
-Alquimia Sonora
-</h2>
-
-<div class="grid md:grid-cols-2 gap-10">
-
-<div class="space-y-4">
-
-<button onclick="playFreq(174,'Seguridad y Base')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-red-500">
-
-<span class="text-2xl opacity-30 italic font-bold">
-174Hz
-</span>
-
-<div class="text-left">
-
-<h5 class="text-sm font-bold uppercase">
-Anestesia Natural
-</h5>
-
-<p class="text-[10px] opacity-50">
-Alivia el dolor físico y emocional
-</p>
-
-</div>
-
-</button>
-
-<button onclick="playFreq(528,'Reparación de ADN')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-purple-400">
-
-<span class="text-2xl opacity-30 italic font-bold">
-528Hz
-</span>
-
-<div class="text-left">
-
-<h5 class="text-sm font-bold uppercase">
-Frecuencia Milagro
-</h5>
-
-<p class="text-[10px] opacity-50">
-Transformación y milagros
-</p>
-
-</div>
-
-</button>
-
-<button onclick="playFreq(852,'Retorno al Orden')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-cyan-400">
-
-<span class="text-2xl opacity-30 italic font-bold">
-852Hz
-</span>
-
-<div class="text-left">
-
-<h5 class="text-sm font-bold uppercase">
-Intuición Pura
-</h5>
-
-<p class="text-[10px] opacity-50">
-Despertar espiritual y luz
-</p>
-
-</div>
-
-</button>
-
-</div>
-
-<div class="flex flex-col justify-center items-center">
-
-<div id="freq-container">
-
-<canvas id="osc-canvas"></canvas>
-
-</div>
-
-<div class="mt-6 text-center">
-
-<p id="now-playing-label" class="text-[10px] uppercase tracking-widest text-cyan-400">
-Silencio absoluto
-</p>
-
-<button onclick="stopAudio()" class="mt-4 text-[10px] opacity-40 hover:opacity-100 uppercase underline">
-Detener frecuencia
-</button>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- ARTE INTERACTIVO MEJORADO -->
-<section id="arte" class="min-h-screen">
-    <div class="module-card">
-        <h2 class="serif text-4xl mb-10"><i class="fas fa-paint-brush mr-4 text-purple-400"></i>Arte de Energía</h2>
-        
-        <!-- Barra de herramientas de arte -->
-        <div class="art-toolbar">
-            <div class="art-tool active" onclick="setArtTool('brush')" id="tool-brush"><i class="fas fa-paint-brush"></i></div>
-            <div class="art-tool" onclick="setArtTool('circle')" id="tool-circle"><i class="far fa-circle"></i></div>
-            <div class="art-tool" onclick="setArtTool('square')" id="tool-square"><i class="fas fa-square"></i></div>
-            <div class="art-tool" onclick="setArtTool('line')" id="tool-line"><i class="fas fa-slash"></i></div>
-            <div class="art-tool" onclick="setArtTool('spray')" id="tool-spray"><i class="fas fa-spray-can"></i></div>
-            <div class="art-tool" onclick="setArtTool('eraser')" id="tool-eraser"><i class="fas fa-eraser"></i></div>
+    <!-- INTRO -->
+    <section id="intro" class="min-h-screen flex flex-col justify-center text-center">
+        <div class="module-card bg-transparent border-none">
+            <h4 class="text-cyan tracking-[0.7em] uppercase text-[10px] mb-6 font-bold">Bienvenida a tu origen</h4>
+            <h1 class="serif text-6xl md:text-8xl mb-8 leading-tight">El Archivo del<br><span class="italic text-purple-400">Alma</span></h1>
+            <p class="max-w-xl mx-auto opacity-60 font-light leading-relaxed mb-10">Un viaje interactivo diseñado para sincronizar tus frecuencias vitales a través del arte digital y la musicoterapia.</p>
         </div>
-        
-        <!-- Selector de colores -->
-        <div class="color-picker">
-            <div class="color-option" style="background: #FF1493;" onclick="setArtColor('#FF1493')"></div>
-            <div class="color-option" style="background: #00FFFF;" onclick="setArtColor('#00FFFF')"></div>
-            <div class="color-option" style="background: #8A2BE2;" onclick="setArtColor('#8A2BE2')"></div>
-            <div class="color-option" style="background: #FFD700;" onclick="setArtColor('#FFD700')"></div>
-            <div class="color-option" style="background: #FF4500;" onclick="setArtColor('#FF4500')"></div>
-            <div class="color-option" style="background: #32CD32;" onclick="setArtColor('#32CD32')"></div>
-            <div class="color-option" style="background: #FFFFFF;" onclick="setArtColor('#FFFFFF')"></div>
-            <div class="color-option" style="background: #000000;" onclick="setArtColor('#000000')"></div>
-        </div>
-        
-        <!-- Tamaño del pincel -->
-        <div class="flex justify-center gap-4 mb-4">
-            <span class="text-xs">Tamaño:</span>
-            <input type="range" id="brush-size" min="1" max="50" value="10" class="w-32">
-        </div>
-        
-        <div id="canvas-holder"></div>
-        
-        <div class="flex justify-center gap-4 mt-6">
-            <button onclick="clearArt()" class="btn-main text-xs">Limpiar todo</button>
-            <button onclick="saveArt()" class="btn-main text-xs">Guardar obra</button>
-            <button onclick="addArtSticker('🌸')" class="btn-main text-xs">🌸 Flor</button>
-            <button onclick="addArtSticker('✨')" class="btn-main text-xs">✨ Estrella</button>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- RECONOCIMIENTO FACIAL -->
-<section id="rostro" class="min-h-screen">
-    <div class="module-card">
-        <h2 class="serif text-4xl mb-10"><i class="fas fa-camera mr-4 text-purple-400"></i>Espejo del Alma</h2>
-        <p class="text-center opacity-70 mb-6">Tu rostro es único y refleja tu esencia divina</p>
-        
-        <div id="camera-container">
-            <video id="video-element" autoplay muted playsinline></video>
-            <canvas id="canvas-overlay"></canvas>
+    <!-- SONIDO -->
+    <section id="sonido" class="min-h-screen">
+        <div class="module-card">
+            <h2 class="serif text-4xl mb-10"><i class="fas fa-adjust mr-4 text-purple-400"></i>Alquimia Sonora</h2>
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="space-y-4">
+                    <button onclick="playFreq(174,'Seguridad y Base')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-red-500">
+                        <span class="text-2xl opacity-30 italic font-bold">174Hz</span>
+                        <div class="text-left">
+                            <h5 class="text-sm font-bold uppercase">Anestesia Natural</h5>
+                            <p class="text-[10px] opacity-50">Alivia el dolor físico y emocional</p>
+                        </div>
+                    </button>
+                    <button onclick="playFreq(528,'Reparación de ADN')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-purple-400">
+                        <span class="text-2xl opacity-30 italic font-bold">528Hz</span>
+                        <div class="text-left">
+                            <h5 class="text-sm font-bold uppercase">Frecuencia Milagro</h5>
+                            <p class="text-[10px] opacity-50">Transformación y milagros</p>
+                        </div>
+                    </button>
+                    <button onclick="playFreq(852,'Retorno al Orden')" class="w-full p-6 glass-panel flex items-center gap-5 hover:bg-white/5 transition border-l-4 border-cyan-400">
+                        <span class="text-2xl opacity-30 italic font-bold">852Hz</span>
+                        <div class="text-left">
+                            <h5 class="text-sm font-bold uppercase">Intuición Pura</h5>
+                            <p class="text-[10px] opacity-50">Despertar espiritual y luz</p>
+                        </div>
+                    </button>
+                </div>
+                <div class="flex flex-col justify-center items-center">
+                    <div id="freq-container"><canvas id="osc-canvas"></canvas></div>
+                    <div class="mt-6 text-center">
+                        <p id="now-playing-label" class="text-[10px] uppercase tracking-widest text-cyan-400">Silencio absoluto</p>
+                        <button onclick="stopAudio()" class="mt-4 text-[10px] opacity-40 hover:opacity-100 uppercase underline">Detener frecuencia</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="face-qualities" id="face-qualities">
-            <h3 class="serif text-2xl mb-4">Cualidades de tu rostro</h3>
-            <div id="qualities-list">Activando cámara...</div>
-            <button onclick="captureFaceMoment()" class="btn-main mt-4">Capturar este momento</button>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- RITMO CARDIACO -->
-<section id="ritmo" class="min-h-screen">
-    <div class="module-card text-center">
-        <h2 class="serif text-4xl mb-10"><i class="fas fa-heartbeat mr-4 text-purple-400"></i>Ritmo Vital</h2>
-        <div class="flex justify-center items-center gap-6">
-            <button onclick="adjustBPM(-5)" class="btn-main">-</button>
-            <div id="bpm-display" class="text-3xl serif">72</div>
-            <button onclick="adjustBPM(5)" class="btn-main">+</button>
+    <!-- ARTE INTERACTIVO -->
+    <section id="arte" class="min-h-screen">
+        <div class="module-card">
+            <h2 class="serif text-4xl mb-10"><i class="fas fa-paint-brush mr-4 text-purple-400"></i>Arte de Energía</h2>
+            <div class="art-toolbar">
+                <div class="art-tool active" onclick="setArtTool('brush')" id="tool-brush"><i class="fas fa-paint-brush"></i></div>
+                <div class="art-tool" onclick="setArtTool('circle')" id="tool-circle"><i class="far fa-circle"></i></div>
+                <div class="art-tool" onclick="setArtTool('square')" id="tool-square"><i class="fas fa-square"></i></div>
+                <div class="art-tool" onclick="setArtTool('line')" id="tool-line"><i class="fas fa-slash"></i></div>
+                <div class="art-tool" onclick="setArtTool('spray')" id="tool-spray"><i class="fas fa-spray-can"></i></div>
+                <div class="art-tool" onclick="setArtTool('eraser')" id="tool-eraser"><i class="fas fa-eraser"></i></div>
+            </div>
+            <div class="color-picker">
+                <div class="color-option" style="background: #FF1493;" onclick="setArtColor('#FF1493')"></div>
+                <div class="color-option" style="background: #00FFFF;" onclick="setArtColor('#00FFFF')"></div>
+                <div class="color-option" style="background: #8A2BE2;" onclick="setArtColor('#8A2BE2')"></div>
+                <div class="color-option" style="background: #FFD700;" onclick="setArtColor('#FFD700')"></div>
+                <div class="color-option" style="background: #FF4500;" onclick="setArtColor('#FF4500')"></div>
+                <div class="color-option" style="background: #32CD32;" onclick="setArtColor('#32CD32')"></div>
+                <div class="color-option" style="background: #FFFFFF;" onclick="setArtColor('#FFFFFF')"></div>
+                <div class="color-option" style="background: #000000;" onclick="setArtColor('#000000')"></div>
+            </div>
+            <div class="flex justify-center gap-4 mb-4">
+                <span class="text-xs">Tamaño:</span>
+                <input type="range" id="brush-size" min="1" max="50" value="10" class="w-32">
+            </div>
+            <div id="canvas-holder"></div>
+            <div class="flex justify-center gap-4 mt-6">
+                <button onclick="clearArt()" class="btn-main text-xs">Limpiar todo</button>
+                <button onclick="saveArt()" class="btn-main text-xs">Guardar obra</button>
+                <button onclick="addArtSticker('🌸')" class="btn-main text-xs">🌸 Flor</button>
+                <button onclick="addArtSticker('✨')" class="btn-main text-xs">✨ Estrella</button>
+            </div>
         </div>
-        <div class="mt-10 flex justify-center">
-            <div id="heart-pulse-1" class="w-24 h-24 rounded-full bg-pink-500 opacity-40"></div>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- TEST DE ARQUETIPOS DE JUNG -->
-<section id="arquetipos" class="min-h-screen">
-    <div class="module-card">
-        <h2 class="serif text-4xl mb-10"><i class="fas fa-mask mr-4 text-purple-400"></i>Conoce tus Arquetipos</h2>
-        <p class="text-center opacity-70 mb-8">Descubre los 3 arquetipos que dominan tu personalidad según Carl Jung</p>
-        
-        <div id="archetype-test">
-            <div id="question-container"></div>
-            <div id="archetype-result" style="display: none;"></div>
+    <!-- RECONOCIMIENTO FACIAL -->
+    <section id="rostro" class="min-h-screen">
+        <div class="module-card">
+            <h2 class="serif text-4xl mb-10"><i class="fas fa-camera mr-4 text-purple-400"></i>Espejo del Alma</h2>
+            <p class="text-center opacity-70 mb-6">Tu rostro es único y refleja tu esencia divina</p>
+            <div id="camera-container">
+                <video id="video-element" autoplay muted playsinline></video>
+                <canvas id="canvas-overlay"></canvas>
+            </div>
+            <div class="face-qualities" id="face-qualities">
+                <h3 class="serif text-2xl mb-4">Cualidades de tu rostro</h3>
+                <div id="qualities-list">Activando cámara...</div>
+                <button onclick="captureFaceMoment()" class="btn-main mt-4">Capturar este momento</button>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ORÁCULO Y DESCARGA PDF -->
-<section id="destino" class="min-h-screen">
-    <div class="module-card text-center">
-        <h2 class="serif text-4xl mb-10"><i class="fas fa-star mr-4 text-purple-400"></i>Oráculo Interior</h2>
-        <p id="oracle-text" class="opacity-70 mb-10">Pulsa para recibir un mensaje</p>
-        <button onclick="getOracle()" class="btn-main mb-6">Revelar mensaje</button>
-        
-        <h3 class="serif text-2xl mt-10 mb-6">Sabiduría para tu viaje</h3>
-        <div class="grid md:grid-cols-2 gap-4 mb-10" id="wisdom-quotes">
-            <!-- Las frases se cargarán dinámicamente según género -->
+    <!-- RITMO CARDIACO -->
+    <section id="ritmo" class="min-h-screen">
+        <div class="module-card text-center">
+            <h2 class="serif text-4xl mb-10"><i class="fas fa-heartbeat mr-4 text-purple-400"></i>Ritmo Vital</h2>
+            <div class="flex justify-center items-center gap-6">
+                <button onclick="adjustBPM(-5)" class="btn-main">-</button>
+                <div id="bpm-display" class="text-3xl serif">72</div>
+                <button onclick="adjustBPM(5)" class="btn-main">+</button>
+            </div>
+            <div class="mt-10 flex justify-center">
+                <div id="heart-pulse-1" class="w-24 h-24 rounded-full bg-pink-500 opacity-40"></div>
+            </div>
         </div>
-        
-        <div id="alchemy-log" class="mt-10 text-left space-y-4 max-h-60 overflow-y-auto p-4 bg-black/30 rounded-2xl"></div>
-        
-        <button onclick="generatePDF()" class="download-btn mt-8">
-            <i class="fas fa-download mr-2"></i>Descargar PDF de tu viaje
-        </button>
-        
-        <div class="mt-6 text-xs opacity-50">
-            <i class="fas fa-check-circle text-green-400"></i> Incluye: registro, cualidades faciales, arquetipos y oráculos
+    </section>
+
+    <!-- TEST DE ARQUETIPOS -->
+    <section id="arquetipos" class="min-h-screen">
+        <div class="module-card">
+            <h2 class="serif text-4xl mb-10"><i class="fas fa-mask mr-4 text-purple-400"></i>Conoce tus Arquetipos</h2>
+            <p class="text-center opacity-70 mb-8">Descubre los 3 arquetipos que dominan tu personalidad según Carl Jung</p>
+            <div id="archetype-test">
+                <div id="question-container"></div>
+                <div id="archetype-result" style="display: none;"></div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- ORÁCULO Y PDF -->
+    <section id="destino" class="min-h-screen">
+        <div class="module-card text-center">
+            <h2 class="serif text-4xl mb-10"><i class="fas fa-star mr-4 text-purple-400"></i>Oráculo Interior</h2>
+            <p id="oracle-text" class="opacity-70 mb-10">Pulsa para recibir un mensaje</p>
+            <button onclick="getOracle()" class="btn-main mb-6">Revelar mensaje</button>
+            <h3 class="serif text-2xl mt-10 mb-6">Sabiduría para tu viaje</h3>
+            <div class="grid md:grid-cols-2 gap-4 mb-10" id="wisdom-quotes"></div>
+            <div id="alchemy-log" class="mt-10 text-left space-y-4 max-h-60 overflow-y-auto p-4 bg-black/30 rounded-2xl"></div>
+            <button onclick="generatePDF()" class="download-btn mt-8"><i class="fas fa-download mr-2"></i>Descargar PDF de tu viaje</button>
+            <div class="mt-6 text-xs opacity-50"><i class="fas fa-check-circle text-green-400"></i> Incluye: registro, cualidades faciales, arquetipos y oráculos</div>
+        </div>
+    </section>
 </main>
 
 <script>
-
-// =============================
+// ==============================================
 // VARIABLES GLOBALES
-// =============================
-
+// ==============================================
 let userData = {
-name:'',
-age:'',
-gender:'',
-registrationDate:new Date().toISOString(),
-faceQualities:[],
-archetypes:[],
-oracleMessages:[],
-bpmHistory:[],
-interactions:[]
-}
+    name: '',
+    age: '',
+    gender: '',
+    registrationDate: new Date().toISOString(),
+    faceQualities: [],
+    archetypes: [],
+    oracleMessages: [],
+    bpmHistory: [],
+    interactions: []
+};
 
-let audioCtx
-let mainGain
-let currentOsc
+let audioCtx;
+let mainGain;
+let currentOsc;
+let bpm = 72;
+let currentTrack = 0;
+let faceDetectionActive = false;
+let archetypeAnswers = {};
+let currentQuestion = 0;
+let amariThinking = false;
 
-let bpm=72
-let currentTrack=0
+// Variables para arte
+let currentTool = 'brush';
+let currentColor = '#FF1493';
 
-let faceDetectionActive=false
-
-let archetypeAnswers={}
-let currentQuestion=0
-
-let amariThinking=false
-
-
-// =============================
+// ==============================================
 // PLAYLIST
-// =============================
+// ==============================================
+const playlist = [
+    { title: "Raíz Interior", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+    { title: "Fuerza Interior", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+    { title: "Equilibrio Universal", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+];
 
-const playlist=[
-{title:"Raíz Interior",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
-{title:"Fuerza Interior",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
-{title:"Equilibrio Universal",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"}
-]
+// ==============================================
+// FRASES POR GÉNERO
+// ==============================================
+const quotesByGender = {
+    femenino: [
+        { author: "Marianne Williamson", text: "Nuestro miedo más profundo no es ser insuficientes, es ser poderosos sin límites." },
+        { author: "Brené Brown", text: "La vulnerabilidad es el coraje de mostrarnos tal como somos." },
+        { author: "Louise Hay", text: "Mereces amor simplemente por existir." }
+    ],
+    masculino: [
+        { author: "Carl Jung", text: "Quien mira hacia afuera sueña, quien mira hacia adentro despierta." },
+        { author: "Joseph Campbell", text: "La cueva que temes entrar contiene el tesoro." },
+        { author: "Robert Bly", text: "El verdadero hombre integra su fuerza con su sensibilidad." }
+    ],
+    'no-binario': [
+        { author: "Alan Watts", text: "Eres una función del universo." },
+        { author: "bell hooks", text: "La sanación ocurre cuando nos conectamos." },
+        { author: "Judith Butler", text: "La identidad es una creación continua." }
+    ],
+    otro: [
+        { author: "Carl Jung", text: "Hasta que hagas consciente lo inconsciente dirigirá tu vida." },
+        { author: "Thich Nhat Hanh", text: "La paz está dentro de ti." },
+        { author: "Ram Dass", text: "Estamos todos caminando juntos." }
+    ]
+};
 
-
-// =============================
+// ==============================================
 // REGISTRO USUARIO
-// =============================
-
-function selectGender(g){
-
-userData.gender=g
-
-document.querySelectorAll('input[name="gender"]').forEach(r=>r.checked=false)
-
-const map={
-'femenino':'gender-f',
-'masculino':'gender-m',
-'no-binario':'gender-nb',
-'otro':'gender-o'
+// ==============================================
+function selectGender(g) {
+    userData.gender = g;
+    document.querySelectorAll('input[name="gender"]').forEach(r => r.checked = false);
+    const map = {
+        'femenino': 'gender-f',
+        'masculino': 'gender-m',
+        'no-binario': 'gender-nb',
+        'otro': 'gender-o'
+    };
+    const id = map[g];
+    if (id) {
+        const el = document.getElementById(id);
+        if (el) el.checked = true;
+    }
 }
 
-const id=map[g]
+function completeRegistration() {
+    userData.name = document.getElementById('user-name').value.trim();
+    userData.age = document.getElementById('user-age').value;
 
-if(id){
-const el=document.getElementById(id)
-if(el)el.checked=true
+    if (!userData.name || !userData.age || !userData.gender) {
+        alert("Completa todos los campos");
+        return;
+    }
+
+    document.getElementById('registration-modal').style.display = "none";
+    
+    // Scroll suave al inicio
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    loadQuotesByGender();
+    startArchetypeTest();
+    
+    // Iniciar detección facial después de un breve retraso
+    setTimeout(() => {
+        if (typeof initFaceDetection === "function") {
+            initFaceDetection();
+        }
+    }, 1000);
 }
 
+function loadQuotesByGender() {
+    const box = document.getElementById("wisdom-quotes");
+    if (!box) return;
+    const g = userData.gender || "otro";
+    const arr = quotesByGender[g] || quotesByGender.otro;
+    box.innerHTML = arr.map(q => `
+        <div class="p-4 bg-white/5 rounded-2xl">
+            <p>"${q.text}"</p>
+            <p class="text-xs opacity-60 mt-2">- ${q.author}</p>
+        </div>
+    `).join("");
 }
 
+// ==============================================
+// AMARI ASISTENTE
+// ==============================================
+let isDragging = false;
+let offsetX, offsetY;
 
-function completeRegistration(){
+document.addEventListener('DOMContentLoaded', function() {
+    const amariWindow = document.getElementById('amari-window');
+    if (amariWindow) {
+        amariWindow.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const pip = document.getElementById('amari-pip');
+            offsetX = e.clientX - pip.offsetLeft;
+            offsetY = e.clientY - pip.offsetTop;
+        });
+    }
+});
 
-userData.name=document.getElementById('user-name').value.trim()
-userData.age=document.getElementById('user-age').value
+document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+        const pip = document.getElementById('amari-pip');
+        pip.style.left = (e.clientX - offsetX) + 'px';
+        pip.style.top = (e.clientY - offsetY) + 'px';
+        pip.style.bottom = 'auto';
+        pip.style.right = 'auto';
+    }
+});
 
-if(!userData.name || !userData.age || !userData.gender){
-alert("Completa todos los campos")
-return
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+function amariInteract(img, msg) {
+    const avatar = document.getElementById("amari-avatar");
+    const speech = document.getElementById("amari-speech");
+    if (!avatar || !speech) return;
+    
+    gsap.to([avatar, speech], {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.2,
+        onComplete: () => {
+            avatar.src = "imagen/" + img;
+            avatar.onerror = () => {
+                avatar.src = 'https://via.placeholder.com/60/8A2BE2/ffffff?text=Amari';
+            };
+            speech.innerText = msg;
+            gsap.to([avatar, speech], {
+                opacity: 1,
+                scale: 1,
+                duration: 0.4,
+                ease: "back.out"
+            });
+        }
+    });
+    
+    userData.interactions.push({
+        time: new Date(),
+        message: msg
+    });
 }
 
-document.getElementById('registration-modal').style.display="none"
-
-loadQuotesByGender()
-startArchetypeTest()
-
-if(typeof initFaceDetection==="function"){
-initFaceDetection()
-}
-
-}
-
-
-// =============================
-// FRASES
-// =============================
-
-const quotesByGender={
-
-femenino:[
-{author:"Marianne Williamson",text:"Nuestro miedo más profundo no es ser insuficientes, es ser poderosos sin límites."},
-{author:"Brené Brown",text:"La vulnerabilidad es el coraje de mostrarnos tal como somos."},
-{author:"Louise Hay",text:"Mereces amor simplemente por existir."}
-],
-
-masculino:[
-{author:"Carl Jung",text:"Quien mira hacia afuera sueña, quien mira hacia adentro despierta."},
-{author:"Joseph Campbell",text:"La cueva que temes entrar contiene el tesoro."},
-{author:"Robert Bly",text:"El verdadero hombre integra su fuerza con su sensibilidad."}
-],
-
-'no-binario':[
-{author:"Alan Watts",text:"Eres una función del universo."},
-{author:"bell hooks",text:"La sanación ocurre cuando nos conectamos."},
-{author:"Judith Butler",text:"La identidad es una creación continua."}
-],
-
-otro:[
-{author:"Carl Jung",text:"Hasta que hagas consciente lo inconsciente dirigirá tu vida."},
-{author:"Thich Nhat Hanh",text:"La paz está dentro de ti."},
-{author:"Ram Dass",text:"Estamos todos caminando juntos."}
-]
-
-}
-
-
-function loadQuotesByGender(){
-
-const box=document.getElementById("wisdom-quotes")
-if(!box)return
-
-const g=userData.gender||"otro"
-
-const arr=quotesByGender[g]||quotesByGender.otro
-
-box.innerHTML=arr.map(q=>`
-
-<div class="p-4 bg-white/5 rounded-2xl">
-
-<p>"${q.text}"</p>
-
-<p class="text-xs opacity-60 mt-2">
-- ${q.author}
-</p>
-
-</div>
-
-`).join("")
-
-}
-
-
-
-// =============================
-// AMARI
-// =============================
-
-function amariInteract(img,msg){
-
-const avatar=document.getElementById("amari-avatar")
-const speech=document.getElementById("amari-speech")
-
-if(!avatar||!speech)return
-
-avatar.src="imagen/"+img
-
-speech.innerText=msg
-
-userData.interactions.push({
-time:new Date(),
-message:msg
-})
-
-}
-
-
-
-// =============================
+// ==============================================
 // AUDIO ENGINE
-// =============================
-
-function initAudio(){
-
-if(!audioCtx){
-
-audioCtx=new(window.AudioContext||window.webkitAudioContext)()
-
-mainGain=audioCtx.createGain()
-
-mainGain.gain.value=.6
-
-mainGain.connect(audioCtx.destination)
-
+// ==============================================
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        mainGain = audioCtx.createGain();
+        mainGain.gain.value = 0.6;
+        mainGain.connect(audioCtx.destination);
+    }
 }
 
+function playFreq(freq, label) {
+    initAudio();
+    if (currentOsc) currentOsc.stop();
+    
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    osc.connect(gain);
+    gain.connect(mainGain);
+    gain.gain.value = 0.2;
+    
+    osc.start();
+    currentOsc = osc;
+    
+    const lab = document.getElementById("now-playing-label");
+    if (lab) lab.innerText = `Resonando ${freq}Hz - ${label}`;
+    
+    amariInteract('Pensando.png', `Sintonizando frecuencia ${freq}Hz`);
 }
 
-
-
-function playFreq(freq,label){
-
-initAudio()
-
-if(currentOsc){
-currentOsc.stop()
+function stopAudio() {
+    if (currentOsc) {
+        currentOsc.stop();
+        currentOsc = null;
+    }
+    const lab = document.getElementById("now-playing-label");
+    if (lab) lab.innerText = "Silencio";
 }
 
-const osc=audioCtx.createOscillator()
-
-const gain=audioCtx.createGain()
-
-osc.type="sine"
-osc.frequency.value=freq
-
-osc.connect(gain)
-gain.connect(mainGain)
-
-gain.gain.value=.2
-
-osc.start()
-
-currentOsc=osc
-
-const lab=document.getElementById("now-playing-label")
-if(lab)lab.innerText=`Resonando ${freq}Hz`
-
-}
-
-
-
-function stopAudio(){
-
-if(currentOsc){
-currentOsc.stop()
-currentOsc=null
-}
-
-const lab=document.getElementById("now-playing-label")
-if(lab)lab.innerText="Silencio"
-
-}
-
-
-
-// =============================
+// ==============================================
 // REPRODUCTOR
-// =============================
+// ==============================================
+const audio = document.getElementById("bg-music");
+const title = document.getElementById("track-title");
+const playBtn = document.getElementById("play-btn");
 
-const audio=document.getElementById("bg-music")
-const title=document.getElementById("track-title")
-const playBtn=document.getElementById("play-btn")
-
-function loadTrack(i){
-
-if(!audio)return
-
-audio.src=playlist[i].src
-
-if(title)title.innerText=playlist[i].title
-
+function loadTrack(i) {
+    if (!audio) return;
+    audio.src = playlist[i].src;
+    if (title) title.innerText = playlist[i].title;
 }
 
-function toggleMusic(){
-
-if(!audio)return
-
-if(audio.paused){
-
-audio.play()
-if(playBtn)playBtn.innerHTML='<i class="fas fa-pause"></i>'
-
-}else{
-
-audio.pause()
-if(playBtn)playBtn.innerHTML='<i class="fas fa-play"></i>'
-
+function toggleMusic() {
+    if (!audio) return;
+    if (audio.paused) {
+        audio.play();
+        if (playBtn) playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        amariInteract('Caminando1.png', 'Disfruta la música');
+    } else {
+        audio.pause();
+        if (playBtn) playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        amariInteract('Casual.png', 'Silencio...');
+    }
 }
 
+function nextTrack() {
+    currentTrack = (currentTrack + 1) % playlist.length;
+    loadTrack(currentTrack);
+    audio.play();
+    amariInteract('Caminando1.png', 'Cambiando de melodía');
 }
 
-function nextTrack(){
-
-currentTrack=(currentTrack+1)%playlist.length
-loadTrack(currentTrack)
-audio.play()
-
+function prevTrack() {
+    currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+    loadTrack(currentTrack);
+    audio.play();
+    amariInteract('Caminando1.png', 'Volviendo atrás');
 }
 
-function prevTrack(){
+loadTrack(0);
 
-currentTrack=(currentTrack-1+playlist.length)%playlist.length
-loadTrack(currentTrack)
-audio.play()
-
+// ==============================================
+// OSCILOSCOPIO
+// ==============================================
+const canvasOsc = document.getElementById("osc-canvas");
+if (canvasOsc) {
+    const ctxOsc = canvasOsc.getContext("2d");
+    canvasOsc.width = canvasOsc.offsetWidth;
+    canvasOsc.height = 150;
+    
+    function animateOsc() {
+        ctxOsc.clearRect(0, 0, canvasOsc.width, canvasOsc.height);
+        ctxOsc.beginPath();
+        ctxOsc.strokeStyle = "#00FFFF";
+        ctxOsc.lineWidth = 2;
+        
+        const amplitude = currentOsc ? 40 : 2;
+        const frequency = currentOsc ? 0.05 : 0.01;
+        
+        for (let x = 0; x < canvasOsc.width; x++) {
+            const y = canvasOsc.height / 2 + Math.sin(x * frequency + Date.now() * 0.005) * amplitude;
+            if (x === 0) ctxOsc.moveTo(x, y);
+            else ctxOsc.lineTo(x, y);
+        }
+        ctxOsc.stroke();
+        requestAnimationFrame(animateOsc);
+    }
+    animateOsc();
 }
 
-loadTrack(0)
+// ==============================================
+// ARTE P5.JS
+// ==============================================
+if (document.getElementById("canvas-holder")) {
+    new p5(p => {
+        let lastX, lastY;
+        
+        p.setup = () => {
+            p.createCanvas(document.getElementById("canvas-holder").offsetWidth, 400).parent("canvas-holder");
+            p.background(5);
+            p.strokeCap(p.ROUND);
+            p.strokeJoin(p.ROUND);
+        };
+        
+        p.mouseDragged = () => {
+            if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
+            
+            const size = parseInt(document.getElementById('brush-size')?.value || 10);
+            
+            switch(currentTool) {
+                case 'brush':
+                    p.stroke(currentColor);
+                    p.strokeWeight(size);
+                    p.line(lastX || p.mouseX, lastY || p.mouseY, p.mouseX, p.mouseY);
+                    break;
+                case 'spray':
+                    p.stroke(currentColor);
+                    p.strokeWeight(1);
+                    for (let i = 0; i < 10; i++) {
+                        let x = p.mouseX + p.random(-size, size);
+                        let y = p.mouseY + p.random(-size, size);
+                        p.point(x, y);
+                    }
+                    break;
+                case 'eraser':
+                    p.stroke(5);
+                    p.strokeWeight(size);
+                    p.line(lastX || p.mouseX, lastY || p.mouseY, p.mouseX, p.mouseY);
+                    break;
+            }
+            lastX = p.mouseX;
+            lastY = p.mouseY;
+        };
+        
+        p.mousePressed = () => {
+            if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
+            
+            const size = parseInt(document.getElementById('brush-size')?.value || 10);
+            
+            if (currentTool === 'circle') {
+                p.noFill();
+                p.stroke(currentColor);
+                p.strokeWeight(2);
+                p.ellipse(p.mouseX, p.mouseY, size * 2);
+                amariInteract('Casual.png', 'Qué bonito círculo');
+            } else if (currentTool === 'square') {
+                p.noFill();
+                p.stroke(currentColor);
+                p.strokeWeight(2);
+                p.rect(p.mouseX - size, p.mouseY - size, size * 2, size * 2);
+                amariInteract('Casual.png', 'Me encanta tu creatividad');
+            } else if (currentTool === 'line') {
+                // Se dibuja al soltar
+            } else {
+                p.stroke(currentColor);
+                p.strokeWeight(size);
+                p.point(p.mouseX, p.mouseY);
+            }
+            lastX = p.mouseX;
+            lastY = p.mouseY;
+        };
+        
+        p.mouseReleased = () => {
+            lastX = null;
+            lastY = null;
+        };
+        
+        window.clearArt = () => {
+            p.background(5);
+            amariInteract('Pensando.png', 'Lienzo limpio, nuevas posibilidades');
+        };
+        
+        window.saveArt = () => {
+            p.saveCanvas("mi_obra", "png");
+            amariInteract('Casual.png', '¡Obra guardada!');
+        };
+        
+        window.addArtSticker = (sticker) => {
+            p.fill(currentColor);
+            p.noStroke();
+            p.textSize(30);
+            p.text(sticker, p.mouseX || p.width/2, p.mouseY || p.height/2);
+        };
+    });
+}
 
+function setArtTool(tool) {
+    currentTool = tool;
+    document.querySelectorAll('.art-tool').forEach(t => t.classList.remove('active'));
+    const el = document.getElementById(`tool-${tool}`);
+    if (el) el.classList.add('active');
+}
 
+function setArtColor(color) {
+    currentColor = color;
+    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+    if (event.target) event.target.classList.add('active');
+}
 
-// =============================
+// ==============================================
+// RECONOCIMIENTO FACIAL
+// ==============================================
+async function initFaceDetection() {
+    try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights');
+        await faceapi.nets.faceExpressionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights');
+        
+        const video = document.getElementById('video-element');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        
+        video.onplay = () => {
+            faceDetectionActive = true;
+            detectFaces();
+            amariInteract('Casual.png', '¡Te veo! Qué bonita luz tienes');
+        };
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('qualities-list').innerHTML = 'No se pudo acceder a la cámara. Verifica permisos.';
+    }
+}
+
+async function detectFaces() {
+    if (!faceDetectionActive) return;
+    
+    const video = document.getElementById('video-element');
+    const canvas = document.getElementById('canvas-overlay');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceExpressions();
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    if (detections.length > 0) {
+        const detection = detections[0];
+        const expressions = detection.expressions;
+        const qualities = [];
+        
+        if (expressions.happy > 0.5) qualities.push("Tu sonrisa refleja alegría interior");
+        if (expressions.surprised > 0.4) qualities.push("Tienes una mirada curiosa");
+        if (expressions.sad < 0.3) qualities.push("Tu rostro transmite paz");
+        
+        userData.faceQualities = qualities;
+        
+        const qualitiesList = document.getElementById('qualities-list');
+        if (qualities.length > 0) {
+            qualitiesList.innerHTML = qualities.map(q => `<div class="mb-2 p-2 bg-purple-500/20 rounded-xl">✨ ${q}</div>`).join('');
+        } else {
+            qualitiesList.innerHTML = '<div class="mb-2 p-2 bg-purple-500/20 rounded-xl">✨ Tu rostro es único y perfecto</div>';
+        }
+    }
+    
+    requestAnimationFrame(detectFaces);
+}
+
+function captureFaceMoment() {
+    const video = document.getElementById('video-element');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    userData.faceCapture = canvas.toDataURL('image/png');
+    amariInteract('Casual.png', '¡Momento capturado!');
+}
+
+// ==============================================
 // RITMO
-// =============================
-
-function adjustBPM(v){
-
-bpm+=v
-
-if(bpm<40)bpm=40
-if(bpm>180)bpm=180
-
-const d=document.getElementById("bpm-display")
-if(d)d.innerText=bpm
-
-userData.bpmHistory.push({time:new Date(),bpm})
-
-updateHeart()
-
+// ==============================================
+function adjustBPM(v) {
+    bpm += v;
+    if (bpm < 40) bpm = 40;
+    if (bpm > 180) bpm = 180;
+    
+    const d = document.getElementById("bpm-display");
+    if (d) d.innerText = bpm;
+    
+    userData.bpmHistory.push({ time: new Date(), bpm });
+    updateHeart();
 }
 
-
-function updateHeart(){
-
-const h=document.getElementById("heart-pulse-1")
-
-if(!h)return
-
-const dur=60/bpm
-
-h.style.animation=`pulse ${dur}s infinite`
-
+function updateHeart() {
+    const h = document.getElementById("heart-pulse-1");
+    if (!h) return;
+    const dur = 60 / bpm;
+    h.style.animation = `pulse ${dur}s infinite`;
 }
 
-
-
-// =============================
+// ==============================================
 // TEST ARQUETIPOS
-// =============================
+// ==============================================
+const archetypeQuestions = [
+    {
+        question: "¿Cómo enfrentas los desafíos?",
+        options: {
+            heroe: "Con valentía y determinación",
+            sabio: "Buscando conocimiento",
+            amante: "Siguiendo el corazón",
+            inocente: "Con fe y optimismo"
+        }
+    },
+    {
+        question: "¿Qué valoras más?",
+        options: {
+            explorador: "La libertad",
+            creador: "Crear cosas nuevas",
+            gobernante: "Orden y liderazgo",
+            mago: "Transformación"
+        }
+    }
+];
 
-const archetypeQuestions=[
-
-{
-question:"¿Cómo enfrentas los desafíos?",
-options:{
-heroe:"Con valentía",
-sabio:"Buscando conocimiento",
-amante:"Siguiendo el corazón",
-inocente:"Con fe y optimismo"
-}
-},
-
-{
-question:"¿Qué valoras más?",
-options:{
-explorador:"La libertad",
-creador:"Crear cosas nuevas",
-gobernante:"Orden y liderazgo",
-mago:"Transformación"
-}
-}
-
-]
-
-
-function startArchetypeTest(){
-
-currentQuestion=0
-archetypeAnswers={}
-
-displayQuestion()
-
+function startArchetypeTest() {
+    currentQuestion = 0;
+    archetypeAnswers = {};
+    displayQuestion();
 }
 
-
-function displayQuestion(){
-
-const box=document.getElementById("question-container")
-
-if(!box)return
-
-if(currentQuestion>=archetypeQuestions.length){
-showArchetypeResults()
-return
+function displayQuestion() {
+    const box = document.getElementById("question-container");
+    if (!box) return;
+    
+    if (currentQuestion >= archetypeQuestions.length) {
+        showArchetypeResults();
+        return;
+    }
+    
+    const q = archetypeQuestions[currentQuestion];
+    box.innerHTML = `
+        <h3 class="serif text-2xl mb-4">${q.question}</h3>
+        ${Object.entries(q.options).map(([k, v]) => 
+            `<div class="archetype-option" onclick="selectArchetypeOption('${k}')">${v}</div>`
+        ).join("")}
+    `;
 }
 
-const q=archetypeQuestions[currentQuestion]
-
-box.innerHTML=`
-
-<h3 class="serif text-2xl mb-4">
-${q.question}
-</h3>
-
-${Object.entries(q.options).map(([k,v])=>
-
-`<div class="archetype-option" onclick="selectArchetypeOption('${k}')">${v}</div>`
-
-).join("")}
-
-`
-
+function selectArchetypeOption(op) {
+    archetypeAnswers["q" + currentQuestion] = op;
+    currentQuestion++;
+    displayQuestion();
+    amariInteract('Pensando.png', 'Interesante elección...');
 }
 
-
-function selectArchetypeOption(op){
-
-archetypeAnswers["q"+currentQuestion]=op
-
-currentQuestion++
-
-displayQuestion()
-
+function showArchetypeResults() {
+    const counts = {};
+    Object.values(archetypeAnswers).forEach(a => counts[a] = (counts[a] || 0) + 1);
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const top = sorted.slice(0, 3).map(x => x[0]);
+    userData.archetypes = top;
+    
+    const box = document.getElementById("archetype-result");
+    if (box) {
+        box.style.display = "block";
+        box.innerHTML = `
+            <h3 class="text-2xl mb-4">Tus arquetipos dominantes</h3>
+            ${top.map((a, i) => `<div class="mb-2">${i+1}. ${a}</div>`).join("")}
+        `;
+    }
+    
+    amariInteract('Casual.png', `Tus arquetipos son: ${top.join(', ')}`);
 }
 
-
-function showArchetypeResults(){
-
-const counts={}
-
-Object.values(archetypeAnswers).forEach(a=>{
-counts[a]=(counts[a]||0)+1
-})
-
-const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1])
-
-const top=sorted.slice(0,3).map(x=>x[0])
-
-userData.archetypes=top
-
-const box=document.getElementById("archetype-result")
-
-if(box){
-
-box.style.display="block"
-
-box.innerHTML=`
-
-<h3 class="text-2xl mb-4">
-Tus arquetipos dominantes
-</h3>
-
-${top.map(a=>`<div class="mb-2">${a}</div>`).join("")}
-
-`
-
+// ==============================================
+// ORÁCULO
+// ==============================================
+function getOracle() {
+    const g = userData.gender || "otro";
+    const arr = quotesByGender[g] || quotesByGender.otro;
+    const q = arr[Math.floor(Math.random() * arr.length)];
+    
+    document.getElementById("oracle-text").innerHTML = `"${q.text}"<br><small>- ${q.author}</small>`;
+    
+    userData.oracleMessages.push({
+        time: new Date(),
+        message: q.text,
+        author: q.author
+    });
+    
+    const log = document.getElementById("alchemy-log");
+    if (log) {
+        const entry = document.createElement("div");
+        entry.className = "p-2 bg-purple-500/20 rounded-lg text-xs";
+        entry.innerHTML = `${new Date().toLocaleTimeString()}: "${q.text.substring(0, 30)}..."`;
+        log.prepend(entry);
+    }
+    
+    amariInteract('Recepcion.png', 'Mensaje revelado');
 }
 
-}
-
-
-
-// =============================
-// ORACULO
-// =============================
-
-function getOracle(){
-
-const g=userData.gender||"otro"
-
-const arr=quotesByGender[g]
-
-const q=arr[Math.floor(Math.random()*arr.length)]
-
-document.getElementById("oracle-text").innerHTML=
-
-`"${q.text}"<br><small>- ${q.author}</small>`
-
-userData.oracleMessages.push(q)
-
-}
-
-
-
-// =============================
+// ==============================================
 // SCROLL
-// =============================
-
-function scrollToSec(id){
-
-const el=document.getElementById(id)
-
-if(!el)return
-
-el.scrollIntoView({
-behavior:"smooth"
-})
-
+// ==============================================
+function scrollToSec(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    
+    if (typeof gsap !== 'undefined') {
+        gsap.to(window, {
+            duration: 1.2,
+            scrollTo: { y: el, offsetY: 50 },
+            ease: "power3.inOut"
+        });
+    } else {
+        el.scrollIntoView({ behavior: "smooth" });
+    }
+    
+    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+    const activeBtn = document.getElementById("btn-" + id);
+    if (activeBtn) activeBtn.classList.add("active");
+    
+    amariInteract('Caminando1.png', `Explorando ${id}`);
 }
 
-
-
-// =============================
+// ==============================================
 // PDF
-// =============================
-
-async function generatePDF(){
-
-if(!window.jspdf){
-alert("PDF no disponible")
-return
+// ==============================================
+async function generatePDF() {
+    if (!window.jspdf) {
+        alert("PDF no disponible");
+        return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = 20;
+    
+    doc.setFontSize(22);
+    doc.setTextColor(138, 43, 226);
+    doc.text("Mi viaje interior", 20, y);
+    y += 15;
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Nombre: " + userData.name, 20, y);
+    y += 10;
+    doc.text("Edad: " + userData.age, 20, y);
+    y += 10;
+    doc.text("Género: " + userData.gender, 20, y);
+    y += 10;
+    doc.text("Fecha: " + new Date().toLocaleDateString(), 20, y);
+    y += 20;
+    
+    doc.text("Arquetipos:", 20, y);
+    y += 10;
+    userData.archetypes.forEach((a, i) => {
+        doc.text(`${i+1}. ${a}`, 25, y);
+        y += 10;
+    });
+    y += 10;
+    
+    doc.text("Últimos mensajes:", 20, y);
+    y += 10;
+    userData.oracleMessages.slice(-3).forEach(msg => {
+        doc.text(`"${msg.message.substring(0, 30)}..."`, 25, y);
+        y += 8;
+        doc.text(`- ${msg.author}`, 30, y);
+        y += 12;
+    });
+    
+    doc.save("mi_viaje_interior.pdf");
+    amariInteract('Casual.png', 'PDF generado');
 }
 
-const{jsPDF}=window.jspdf
-
-const doc=new jsPDF()
-
-doc.text("Mi viaje interior",20,20)
-
-doc.text("Nombre: "+userData.name,20,40)
-
-doc.text("Edad: "+userData.age,20,50)
-
-doc.text("Genero: "+userData.gender,20,60)
-
-doc.text("Arquetipos:",20,80)
-
-userData.archetypes.forEach((a,i)=>{
-doc.text("- "+a,25,90+i*10)
-})
-
-doc.save("mi_viaje_interior.pdf")
-
+// ==============================================
+// FONDO PARTÍCULAS
+// ==============================================
+if (typeof p5 !== "undefined") {
+    new p5(p => {
+        let pts = [];
+        p.setup = () => {
+            p.createCanvas(window.innerWidth, window.innerHeight).parent("bg-canvas");
+            for (let i = 0; i < 60; i++) {
+                pts.push({ x: p.random(p.width), y: p.random(p.height), v: p.random(0.2, 0.5) });
+            }
+        };
+        p.draw = () => {
+            p.clear();
+            p.fill(138, 43, 226, 30);
+            p.noStroke();
+            pts.forEach(pt => {
+                p.ellipse(pt.x, pt.y, 2);
+                pt.y -= pt.v;
+                if (pt.y < 0) pt.y = p.height;
+            });
+        };
+    });
 }
-
-
-
-// =============================
-// FONDO PARTICULAS
-// =============================
-
-if(typeof p5!=="undefined"){
-
-new p5(p=>{
-
-let pts=[]
-
-p.setup=()=>{
-
-p.createCanvas(window.innerWidth,window.innerHeight).parent("bg-canvas")
-
-for(let i=0;i<60;i++){
-pts.push({x:p.random(p.width),y:p.random(p.height),v:p.random(.2,.5)})
-}
-
-}
-
-p.draw=()=>{
-
-p.clear()
-
-p.fill(138,43,226,30)
-p.noStroke()
-
-pts.forEach(pt=>{
-
-p.ellipse(pt.x,pt.y,2)
-
-pt.y-=pt.v
-
-if(pt.y<0)pt.y=p.height
-
-})
-
-}
-
-})
-
-}
-
 </script>
 </body> 
 </html>
